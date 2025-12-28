@@ -156,114 +156,348 @@
 
         // --- DATA ---
         const compendioData = [
-            // I. IDENTIDAD E HISTORIA
-            { id: 1, term: "Peruanidad", category: "Identidad", definition: "Concepto de Víctor Andrés Belaunde. Define al Perú no como una suma de partes, sino como una 'síntesis viviente', una nueva entidad espiritual y biológica indivisible." },
-            { id: 2, term: "Pacto Hispano-Inca", category: "Identidad", definition: "Alianza fundacional entre la Corona de Castilla y las Panacas del Cusco, permitiendo la transición legal del Tahuantinsuyo al Virreinato." },
-            { id: 3, term: "Incas Católicos", category: "Identidad", definition: "Nobleza incaica que adoptó el cristianismo, conservó privilegios y actuó como vehículo de evangelización (ej. Cristóbal Paullu Inca)." },
-            { id: 4, term: "Praeparatio Evangelica", category: "Identidad", definition: "Teoría que sostiene que el Incanato fue una preparación providencial, con su moral y orden, para la recepción del Evangelio." },
-            { id: 5, term: "Semillas del Verbo", category: "Identidad", definition: "Concepto patrístico: la verdad divina ya estaba dispersa en la cultura andina (ej. idea de un creador) antes de la llegada de los misioneros." },
-            { id: 6, term: "Mestizaje", category: "Identidad", definition: "La sustancia de la nación. Fusión biológica y cultural que trasciende la raza para convertirse en una categoría espiritual de unidad." },
-            { id: 7, term: "Pachayachachic", category: "Identidad", definition: "Atributo de Viracocha entendido como 'Ordenador del Mundo'. Identificado con el Dios Creador cristiano para facilitar la conversión." },
-            { id: 8, term: "Sol de Justicia", category: "Identidad", definition: "Proceso de sustitución simbólica donde el culto al sol físico (Inti) fue redirigido hacia Cristo, el 'Sol de Justicia'." },
-            { id: 9, term: "Panaca Real", category: "Identidad", definition: "Estructura de linaje incaica que la Iglesia respetó y reconoció legalmente durante tres siglos." },
-            { id: 10, term: "Cédula de Honores", category: "Identidad", definition: "Decreto de Carlos V que reconocía a los nobles incas como 'Grandes de España', con estatus superior al plebeyo español." },
-            { id: 11, term: "Reinos del Perú", category: "Identidad", definition: "Definición jurídica del estatus político del Perú bajo la monarquía hispánica; un Reino con igualdad jurídica, no una colonia." },
-            { id: 12, term: "Quechua Pastoral", category: "Identidad", definition: "Versión estandarizada del quechua, desarrollada por la Iglesia (Concilios Limenses) para la evangelización y la alta cultura." },
-            { id: 13, term: "Inca Garcilaso de la Vega", category: "Identidad", definition: "El arquetipo del peruano. Primer mestizo biológico y espiritual que reconcilió sus dos herencias en los 'Comentarios Reales'." },
-            { id: 14, term: "Blasón Indígena", category: "Identidad", definition: "Heráldica otorgada a los nobles incas, combinando simbología europea (yelmos) con andina (mascaipacha, serpientes)." },
-            { id: 15, term: "Leyenda Negra", category: "Identidad", definition: "Narrativa propagandística que busca fracturar la identidad peruana presentando la historia solo como víctimas y victimarios." },
-            { id: 61, term: "Perú", category: "Identidad", definition: "Nombre que no es quechua ni español, nacido del mestizaje en Panamá (Birú). Representa la nueva realidad histórica que trasciende al Tahuantinsuyo." },
-            { id: 62, term: "Gran Perú", category: "Identidad", definition: "El territorio histórico que abarcó casi toda Sudamérica bajo el Virreinato, centro irradiador de civilización desde Panamá hasta Tierra del Fuego." },
-            { id: 63, term: "Monarquía Peruana", category: "Identidad", definition: "Tradición de gobierno natural de los Andes, iniciada con los Incas y continuada con los Reyes de España, basada en la lealtad y el pacto." },
-            { id: 64, term: "Estado Peruano", category: "Identidad", definition: "La estructura jurídica y política moderna, que muchas veces entró en conflicto con la nación histórica al ignorar a las comunidades y panacas." },
-            { id: 65, term: "Patria Peruana", category: "Identidad", definition: "Del latín 'Pater'. La tierra de los padres. Implica amar la herencia recibida tanto de la raíz andina como de la hispana." },
-            { id: 66, term: "Nación Peruana", category: "Identidad", definition: "La comunidad de personas unidas por el mestizaje, la fe y la historia común, más allá de las divisiones raciales o de clase." },
-            { id: 67, term: "Imperio Peruano", category: "Identidad", definition: "Concepto geopolítico. El Perú nació con vocación imperial (Inca y Virreinal) para integrar el continente, no para ser una república aislada." },
-            { id: 68, term: "Virreinato", category: "Identidad", definition: "No fue una colonia, sino un Reino integrante de la Monarquía Hispánica, con sus propias cortes, nobleza, moneda y administración." },
-            { id: 69, term: "Casa Habsburgo", category: "Identidad", definition: "Dinastía (Austrias) que gobernó durante el auge del pacto Hispano-Inca, respetando la autonomía de los fueros indígenas y la nobleza local." },
-            { id: 70, term: "Casa Borbón", category: "Identidad", definition: "Dinastía reformista (s. XVIII) que centralizó el poder, rompió pactos con los caciques y expulsó a los jesuitas, detonando rebeliones." },
-            { id: 71, term: "Liberalismo", category: "Identidad", definition: "Ideología importada que, al fundar la República, rompió la estructura comunitaria andina y la protección de las tierras indígenas." },
-            { id: 72, term: "Monarquismo", category: "Identidad", definition: "Corriente política (San Martín, Túpac Amaru) que entendía que el Perú, por su historia, funcionaba mejor bajo una figura de autoridad tradicional." },
+            // Glosario referente a la Peruanidad (con “Relacionados / seeAlso” auto-generado)
+// ✅ Mantiene tus definiciones originales
+// ✅ Añade axis + keywords + helpers
+// ✅ Genera seeAlso automáticamente por similitud (keywords + tokens) y refuerza con reglas “inteligentes”
+// ✅ NO usa “peruanidista” en ninguna parte
 
-            // II. CULTURA Y CELEBRACIÓN
-            { id: 16, term: "Barroco Andino", category: "Cultura", definition: "Estilo artístico de fusión. Caracterizado por la saturación decorativa y el uso de flora/fauna local en templos cristianos." },
-            { id: 17, term: "Corpus Christi Cusqueño", category: "Cultura", definition: "La 'Fiesta Nacional' surandina. Procesión eucarística que integró la estructura de las Panacas y Ayllus en el culto católico." },
-            { id: 18, term: "Escuela Cusqueña", category: "Cultura", definition: "Movimiento pictórico indígena/mestizo. Libertad estética y uso del 'brocateado' (pan de oro sobre las telas)." },
-            { id: 19, term: "Sincretismo Virtuoso", category: "Cultura", definition: "Estrategia de 'bautizar' costumbres locales en lugar de eliminarlas, dándoles un nuevo significado cristiano." },
-            { id: 20, term: "Ángel Arcabucero", category: "Cultura", definition: "Iconografía única: ángeles vestidos como nobles españoles armados con arcabuces, asociados con el rayo (Illapa)." },
-            { id: 21, term: "Hanacpachap Cussicuinin", category: "Cultura", definition: "'La Alegría del Cielo'. Primera obra polifónica compuesta en América (1631), escrita en quechua." },
-            { id: 22, term: "Niño Manuelito", category: "Cultura", definition: "Representación andina del Niño Jesús, a menudo vestido como Inca, simbolizando cercanía con el sufrimiento indígena." },
-            { id: 23, term: "Retablo Ayacuchano", category: "Cultura", definition: "Evolución del 'Cajón de San Marcos'. Máxima expresión del sincretismo narrativo popular y evangelización portátil." },
-            { id: 24, term: "Mascaipacha Eclesiástica", category: "Cultura", definition: "Fenómeno visual donde el símbolo de poder inca (borla roja) corona figuras cristianas o alféreces reales en el arte." },
-            { id: 25, term: "Santurantikuy", category: "Cultura", definition: "'Venta de Santos'. Feria tradicional cusqueña que demuestra la economía y artesanía generada alrededor de la fe." },
-            { id: 26, term: "La Procesión", category: "Cultura", definition: "Formato de culto público por excelencia. Reemplazó desplazamientos de momias, permitiendo 'caminar con Dios'." },
-            { id: 27, term: "Arquitectura Misional", category: "Cultura", definition: "Estilo de construcción (adobe, quincha) adaptado a la geografía, centro de la vida urbana en selva y sierra." },
-            { id: 28, term: "Huacas Cristianizadas", category: "Cultura", definition: "Lugares sagrados prehispánicos marcados con cruces para consagrar el espacio geográfico a la nueva fe." },
-            { id: 29, term: "Danzas de Moros y Cristianos", category: "Cultura", definition: "Adaptadas como danzas de 'Incas y Españoles' o 'Ángeles y Demonios', ritualizando la historia." },
-            { id: 30, term: "Teología Visual", category: "Cultura", definition: "Uso del arte mural y escultórico como medio didáctico principal en una sociedad visualmente sofisticada." },
-            { id: 73, term: "Capac Cuna", category: "Cultura", definition: "La lista oficial de los gobernantes incas. En el virreinato, esta lista se extendió para incluir a los Reyes de España como sucesores legítimos." },
-            { id: 74, term: "Mascaipacha", category: "Cultura", definition: "La borla imperial roja, símbolo máximo del poder inca. Fue reconocida y usada por los nobles incas en ceremonias católicas virreinales." },
-            { id: 75, term: "Quipu", category: "Cultura", definition: "Sistema de cuerdas y nudos para contabilidad y registro. Se siguió usando en la administración virreinal temprana como herramienta de orden." },
-            { id: 76, term: "Quechua", category: "Cultura", definition: "Lengua General (Runa Simi). La Iglesia la sistematizó y expandió más que los propios Incas, usándola para la evangelización y la cultura." },
-            { id: 77, term: "Pukina", category: "Cultura", definition: "La 'lengua secreta' de la nobleza incaica, distinta al quechua. Su rastro se encuentra en el portal pentalingüe de Andahuaylillas." },
-            { id: 78, term: "Cápac Unáncha", category: "Cultura", definition: "El estandarte real. Símbolo de soberanía que el Alférez Real (descendiente inca) portaba en las procesiones junto a la Mascaipacha." },
-            { id: 79, term: "Punchaw", category: "Cultura", definition: "El ídolo del Sol del día. Estatua de oro que contenía las cenizas de los corazones de los incas, reemplazada teológicamente por la Custodia." },
-            { id: 80, term: "Tupayauri", category: "Cultura", definition: "El cetro de oro de Manco Cápac. Símbolo de poder fundacional que se fusionó con los bastones de mando de las autoridades virreinales." },
-            { id: 81, term: "Blasón de la Conquista", category: "Cultura", definition: "Escudos de armas otorgados a ciudades y nobles indígenas, mezclando heráldica europea (leones, castillos) con andina (jaguares, serpientes)." },
+// -------------------- 1) Ejes --------------------
+const AXIS = {
+  IDENTIDAD_HISTORIA: "Identidad e Historia",
+  CULTURA_CELEBRACION: "Cultura y Celebración",
+  VIDA_SOCIAL_ETICA: "Vida Social y Ética",
+  ESPIRITUALIDAD_SIMBOLOS: "Espiritualidad y Símbolos",
+};
 
-            // III. VIDA SOCIAL Y ÉTICA
-            { id: 31, term: "Derecho de Gentes", category: "Social", definition: "Base filosófica (Escuela de Salamanca) que estableció la humanidad y derechos naturales de los indígenas." },
-            { id: 32, term: "Leyes de Indias", category: "Social", definition: "Cuerpo legislativo de la Corona para proteger al indígena de abusos, garantizando tierras comunales." },
-            { id: 33, term: "Protectoría de Indios", category: "Social", definition: "Institución virreinal encargada de representar legalmente a los indígenas, como una 'Defensoría del Pueblo'." },
-            { id: 34, term: "Curaca (Cacique)", category: "Social", definition: "Autoridad indígena bisagra. Mantenía el orden local y enlazaba el mundo andino con el aparato virreinal." },
-            { id: 35, term: "Varayoc", category: "Social", definition: "Sistema de autoridad comunal indígena (alcaldes de indios) instituido en el Virreinato, vigente hasta hoy." },
-            { id: 36, term: "Ayllu", category: "Social", definition: "Célula social andina basada en el parentesco. La Iglesia la preservó al convertirla en base parroquial rural." },
-            { id: 37, term: "Cofradía", category: "Social", definition: "Asociación laica de fieles. Funcionaba como banco, seguro de salud y centro festivo, reemplazando funciones del Ayllu." },
-            { id: 38, term: "Ayni y Minka", category: "Social", definition: "Sistemas de reciprocidad y trabajo comunal andino integrados en la construcción de obras públicas virreinales." },
-            { id: 39, term: "Hospitales de Naturales", category: "Social", definition: "Red de salud pionera fundada por la Iglesia (ej. Hospital de Santa Ana) para atención diferenciada indígena." },
-            { id: 40, term: "Doctrina", category: "Social", definition: "Pueblo de indios organizado por la Iglesia. Centro de civilización técnica, agrícola y educativa." },
-            { id: 41, term: "Universidad de San Marcos", category: "Social", definition: "Fundada en 1551. Foco intelectual donde se educó la élite y se estableció la cátedra de Quechua." },
-            { id: 42, term: "Colegio de Caciques", category: "Social", definition: "Instituciones (como San Francisco de Borja) para educar a la nobleza indígena, creando una élite inca-hispana." },
-            { id: 43, term: "Mita Virreinal", category: "Social", definition: "Adaptación del trabajo rotativo incaico. Base económica regulada legalmente, distinta a la esclavitud chattel." },
-            { id: 44, term: "Cabildo de Indios", category: "Social", definition: "Órgano de gobierno municipal exclusivo para las repúblicas de indios, permitiendo autogobierno local." },
-            { id: 45, term: "Resguardo Indígena", category: "Social", definition: "Tierras comunales protegidas por título real, inalienables, base de las comunidades campesinas actuales." },
-            { id: 82, term: "Francisco Pizarro", category: "Social", definition: "Conquistador y fundador. Estableció la alianza con las panacas huascaristas contra Atahualpa, dando inicio al Perú mestizo." },
-            { id: 83, term: "Pachacútec", category: "Social", definition: "El gran organizador del Tahuantinsuyo. Su búsqueda del dios ordenador (Pachayachachic) preparó filosóficamente a los Andes para el monoteísmo." },
-            { id: 84, term: "Atahualpa", category: "Social", definition: "Considerado usurpador y tirano por las panacas cusqueñas. Su ejecución fue vista por muchos nobles incas como justicia divina." },
-            { id: 85, term: "Huascar", category: "Social", definition: "Inca legítimo del Cusco. Su asesinato por las tropas de Atahualpa motivó a su familia a aliarse con Pizarro." },
-            { id: 86, term: "Orden Jesuita", category: "Social", definition: "La 'Compañía de Jesús'. Educadores de la nobleza inca y arquitectos de la cultura barroca. Su símbolo (sol) resonó con la mística andina." },
-            { id: 87, term: "Lima", category: "Social", definition: "Ciudad de los Reyes. Centro político y administrativo del Virreinato, donde convivían todas las castas del imperio." },
-            { id: 88, term: "Cuzco", category: "Social", definition: "La 'Roma de América'. Centro histórico y espiritual donde se mantuvo la nobleza incaica con sus fueros y tradiciones." },
-            { id: 89, term: "Real Felipe", category: "Social", definition: "Fortaleza del Callao. Símbolo del poder militar y defensa del Virreinato frente a piratas y potencias enemigas." },
-            { id: 90, term: "Beatriz Clara Coya", category: "Social", definition: "Princesa inca, heredera de Sayri Túpac. Su matrimonio con Martín García de Loyola simboliza la unión de sangres y coronas." },
-            { id: 91, term: "Martín García de Loyola", category: "Social", definition: "Capitán español, sobrino de San Ignacio. Al casarse con la Ñusta Beatriz, selló la alianza estratégica entre la Corona y los Incas." },
-            { id: 92, term: "Vicente Chimor", category: "Social", definition: "Cacique de la costa norte que reclamó al Rey sus derechos nobiliarios, demostrando la capacidad legal de la nobleza indígena." },
+const axisFromCategory = (category) => {
+  if (category === "Identidad") return AXIS.IDENTIDAD_HISTORIA;
+  if (category === "Cultura") return AXIS.CULTURA_CELEBRACION;
+  if (category === "Social") return AXIS.VIDA_SOCIAL_ETICA;
+  if (category === "Espiritualidad") return AXIS.ESPIRITUALIDAD_SIMBOLOS;
+  return "General";
+};
 
-            // IV. ESPIRITUALIDAD Y SÍMBOLOS
-            { id: 46, term: "Señor de los Milagros", category: "Espiritualidad", definition: "El 'Cristo de la Unidad'. Integró el componente afroperuano, indígena y criollo bajo el color morado." },
-            { id: 47, term: "Taytacha Temblores", category: "Espiritualidad", definition: "El 'Cristo Moreno' del Cusco. Su color oscuro valida la tez mestiza y fusiona sufrimiento andino y cristiano." },
-            { id: 48, term: "Santa Rosa de Lima", category: "Espiritualidad", definition: "Primera Santa de América. Símbolo de que la tierra peruana era fértil para la santidad universal." },
-            { id: 49, term: "San Martín de Porres", category: "Espiritualidad", definition: "Santo de la escoba. Representa la dignidad de los oficios humildes y la superación de barreras raciales." },
-            { id: 50, term: "Virgen de la Candelaria", category: "Espiritualidad", definition: "Máxima expresión de fe del Altiplano. Fusiona el culto a la Pachamama con la Virgen María." },
-            { id: 51, term: "Cruz de Motupe", category: "Espiritualidad", definition: "Devoción de 'hallazgo'. La cruz en el cerro (Apu) que sacraliza la geografía norteña." },
-            { id: 52, term: "Santidad Mestiza", category: "Espiritualidad", definition: "Reconocimiento de que la santidad no es europea. Incluye figuras como el indio Nicolás de Ayllón." },
-            { id: 53, term: "Beatitas", category: "Espiritualidad", definition: "Mujeres laicas consagradas que sostenían la caridad y la oración en las ciudades sin estar en conventos." },
-            { id: 54, term: "Apus Tutelares", category: "Espiritualidad", definition: "Visión Católica: respeto a la naturaleza no como dios, sino como creación, permitiendo subsistir el respeto cultural." },
-            { id: 55, term: "La Dolorosa", category: "Espiritualidad", definition: "Advocación mariana preferida en el Perú, resonando con el sentimiento trágico de la cosmovisión andina." },
-            { id: 56, term: "Exvotos", category: "Espiritualidad", definition: "Pequeñas ofrendas (milagros) que demuestran la relación tangible y de agradecimiento con lo divino." },
-            { id: 57, term: "Sarita Colonia", category: "Espiritualidad", definition: "Culto popular. Representa la necesidad del migrante y marginado de encontrar protección espiritual." },
-            { id: 58, term: "Vocación Imperial", category: "Espiritualidad", definition: "Conciencia histórica de que el Perú fue centro irradiador de fe y cultura para toda Sudamérica." },
-            { id: 59, term: "Tierra de Santos", category: "Espiritualidad", definition: "Título dado al Perú por la inusual concentración de santos contemporáneos en el siglo XVII." },
-            { id: 60, term: "Firme y Feliz por la Unión", category: "Espiritualidad", definition: "Lema nacional que resume el objetivo: la peruanidad solo es viable a través de la unión de sus herencias." },
-            { id: 93, term: "Promesa del Sol", category: "Espiritualidad", definition: "Mito fundacional donde el Sol promete a Pachacútec un imperio eterno. Prefigura la llegada del 'Verdadero Sol' (Cristo) que da sentido a la historia." },
-            { id: 94, term: "Wiracocha", category: "Espiritualidad", definition: "El Dios hacedor. Concepto andino del creador supremo que facilitó la comprensión y aceptación del Dios cristiano." },
-            { id: 95, term: "Jesucristo", category: "Espiritualidad", definition: "El 'Sol de Justicia' y 'Luz del Mundo'. Su figura completó y perfeccionó la adoración solar incaica sin contradecirla." },
-            { id: 96, term: "Santo Toribio de Mogrovejo", category: "Espiritualidad", definition: "Arzobispo de Lima y patrono del episcopado latinoamericano. Defensor de los indios, aprendió quechua para evangelizar corazón a corazón." },
-            { id: 97, term: "Pachacamaca", category: "Espiritualidad", definition: "'El que anima al mundo'. Término que Garcilaso de la Vega reivindica para referirse al Dios cristiano en lengua quechua." },
-            { id: 98, term: "Incarri", category: "Espiritualidad", definition: "Mito mesiánico andino sobre el regreso del Inca para restaurar el orden. Refleja la esperanza de restauración y justicia." },
-            { id: 99, term: "San Francisco de Borja", category: "Espiritualidad", definition: "Santo jesuita de sangre real (Gandía). Patrón de la nobleza indígena, modelo de santidad para los colegios de caciques." },
-            { id: 100, term: "La Cruz de la Conquista", category: "Espiritualidad", definition: "Símbolo fundacional traído por los dominicos (Vicente de Valverde), marcando el inicio de la nueva era espiritual del Perú." }
-        ];
+// -------------------- 2) Utilidades de texto --------------------
+const normalize = (s) =>
+  String(s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, ""); // quita tildes
+
+const STOP = new Set(
+  [
+    "del","de","la","el","los","las","y","o","u","en","un","una","unos","unas","por","para",
+    "como","con","sin","que","se","su","sus","al","a","es","son","fue","era","fueron","ser",
+    "sino","más","mas","ya","antes","desde","hacia","entre","sobre","también","muy","no",
+    "lo","le","les","mi","tu","sus","este","esta","estos","estas","ese","esa","esos","esas",
+    "donde","cuando","cuya","cuyo","cuyas","cuyos","otra","otro","otras","otros"
+  ].map(normalize)
+);
+
+const tokenize = (text) => {
+  const raw = normalize(text)
+    .replace(/[()'".;:¡!¿?\[\]{}]/g, " ")
+    .replace(/[^a-z0-9ñ\s-]/g, " ")
+    .split(/\s+/g)
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  // filtra stopwords y tokens muy cortos
+  return raw.filter((t) => t.length >= 4 && !STOP.has(t));
+};
+
+const uniq = (arr) => [...new Set(arr)];
+
+// Keywords “básicas” para buscador
+const mk = (arr = []) => uniq(arr.flatMap(tokenize));
+
+// -------------------- 3) Tu base (idéntica a la tuya) --------------------
+const baseGlossary = [
+  // I. IDENTIDAD E HISTORIA
+  { id: 1, term: "Peruanidad", category: "Identidad", definition: "Concepto de Víctor Andrés Belaunde. Define al Perú no como una suma de partes, sino como una 'síntesis viviente', una nueva entidad espiritual y biológica indivisible." },
+  { id: 2, term: "Pacto Hispano-Inca", category: "Identidad", definition: "Alianza fundacional entre la Corona de Castilla y las Panacas del Cusco, permitiendo la transición legal del Tahuantinsuyo al Virreinato." },
+  { id: 3, term: "Incas Católicos", category: "Identidad", definition: "Nobleza incaica que adoptó el cristianismo, conservó privilegios y actuó como vehículo de evangelización (ej. Cristóbal Paullu Inca)." },
+  { id: 4, term: "Praeparatio Evangelica", category: "Identidad", definition: "Teoría que sostiene que el Incanato fue una preparación providencial, con su moral y orden, para la recepción del Evangelio." },
+  { id: 5, term: "Semillas del Verbo", category: "Identidad", definition: "Concepto patrístico: la verdad divina ya estaba dispersa en la cultura andina (ej. idea de un creador) antes de la llegada de los misioneros." },
+  { id: 6, term: "Mestizaje", category: "Identidad", definition: "La sustancia de la nación. Fusión biológica y cultural que trasciende la raza para convertirse en una categoría espiritual de unidad." },
+  { id: 7, term: "Pachayachachic", category: "Identidad", definition: "Atributo de Viracocha entendido como 'Ordenador del Mundo'. Identificado con el Dios Creador cristiano para facilitar la conversión." },
+  { id: 8, term: "Sol de Justicia", category: "Identidad", definition: "Proceso de sustitución simbólica donde el culto al sol físico (Inti) fue redirigido hacia Cristo, el 'Sol de Justicia'." },
+  { id: 9, term: "Panaca Real", category: "Identidad", definition: "Estructura de linaje incaica que la Iglesia respetó y reconoció legalmente durante tres siglos." },
+  { id: 10, term: "Cédula de Honores", category: "Identidad", definition: "Decreto de Carlos V que reconocía a los nobles incas como 'Grandes de España', con estatus superior al plebeyo español." },
+  { id: 11, term: "Reinos del Perú", category: "Identidad", definition: "Definición jurídica del estatus político del Perú bajo la monarquía hispánica; un Reino con igualdad jurídica, no una colonia." },
+  { id: 12, term: "Quechua Pastoral", category: "Identidad", definition: "Versión estandarizada del quechua, desarrollada por la Iglesia (Concilios Limenses) para la evangelización y la alta cultura." },
+  { id: 13, term: "Inca Garcilaso de la Vega", category: "Identidad", definition: "El arquetipo del peruano. Primer mestizo biológico y espiritual que reconcilió sus dos herencias en los 'Comentarios Reales'." },
+  { id: 14, term: "Blasón Indígena", category: "Identidad", definition: "Heráldica otorgada a los nobles incas, combinando simbología europea (yelmos) con andina (mascaipacha, serpientes)." },
+  { id: 15, term: "Leyenda Negra", category: "Identidad", definition: "Narrativa propagandística que busca fracturar la identidad peruana presentando la historia solo como víctimas y victimarios." },
+  { id: 61, term: "Perú", category: "Identidad", definition: "Nombre que no es quechua ni español, nacido del mestizaje. Representa la nueva realidad histórica que trasciende al Tahuantinsuyo." },
+  { id: 62, term: "Gran Perú", category: "Identidad", definition: "El territorio histórico que abarcó casi toda Sudamérica bajo el Virreinato, centro irradiador de civilización desde Panamá hasta Tierra del Fuego." },
+  { id: 63, term: "Monarquía Peruana", category: "Identidad", definition: "Tradición de gobierno natural de los Andes, iniciada con los Incas y continuada con los Reyes de España, basada en la lealtad y el pacto." },
+  { id: 64, term: "Estado Peruano", category: "Identidad", definition: "La estructura jurídica y política moderna, que muchas veces entró en conflicto con la nación histórica al ignorar a las comunidades y panacas." },
+  { id: 65, term: "Patria Peruana", category: "Identidad", definition: "Del latín 'Pater'. La tierra de los padres. Implica amar la herencia recibida tanto de la raíz andina como de la hispana." },
+  { id: 66, term: "Nación Peruana", category: "Identidad", definition: "La comunidad de personas unidas por el mestizaje, la fe y la historia común, más allá de las divisiones raciales o de clase." },
+  { id: 67, term: "Imperio Peruano", category: "Identidad", definition: "Concepto geopolítico. El Perú nació con vocación imperial (Inca y Virreinal) para integrar el continente, no para ser una república aislada." },
+  { id: 68, term: "Virreinato", category: "Identidad", definition: "No fue una colonia, sino un Reino integrante de la Monarquía Hispánica, con sus propias cortes, nobleza, moneda y administración." },
+  { id: 69, term: "Casa Habsburgo", category: "Identidad", definition: "Dinastía (Austrias) que gobernó durante el auge del pacto Hispano-Inca, respetando la autonomía de los fueros indígenas y la nobleza local." },
+  { id: 70, term: "Casa Borbón", category: "Identidad", definition: "Dinastía reformista (s. XVIII) que centralizó el poder, rompió pactos con los caciques y expulsó a los jesuitas, detonando rebeliones." },
+  { id: 71, term: "Liberalismo", category: "Identidad", definition: "Ideología importada que, al fundar la República, rompió la estructura comunitaria andina y la protección de las tierras indígenas." },
+  { id: 72, term: "Monarquismo", category: "Identidad", definition: "Corriente política (San Martín, Túpac Amaru) que entendía que el Perú, por su historia, funcionaba mejor bajo una figura de autoridad tradicional." },
+
+  // II. CULTURA Y CELEBRACIÓN
+  { id: 16, term: "Barroco Andino", category: "Cultura", definition: "Estilo artístico de fusión. Caracterizado por la saturación decorativa y el uso de flora/fauna local en templos cristianos." },
+  { id: 17, term: "Corpus Christi Cusqueño", category: "Cultura", definition: "La 'Fiesta Nacional' surandina. Procesión eucarística que integró la estructura de las Panacas y Ayllus en el culto católico." },
+  { id: 18, term: "Escuela Cusqueña", category: "Cultura", definition: "Movimiento pictórico indígena/mestizo. Libertad estética y uso del 'brocateado' (pan de oro sobre las telas)." },
+  { id: 19, term: "Sincretismo Virtuoso", category: "Cultura", definition: "Estrategia de 'bautizar' costumbres locales en lugar de eliminarlas, dándoles un nuevo significado cristiano." },
+  { id: 20, term: "Ángel Arcabucero", category: "Cultura", definition: "Iconografía única: ángeles vestidos como nobles españoles armados con arcabuces, asociados con el rayo (Illapa)." },
+  { id: 21, term: "Hanacpachap Cussicuinin", category: "Cultura", definition: "'La Alegría del Cielo'. Primera obra polifónica compuesta en América (1631), escrita en quechua." },
+  { id: 22, term: "Niño de la Mascaipacha", category: "Cultura", definition: "Representación andina del Niño Jesús, a menudo vestido como Inca, simbolizando cercanía con el sufrimiento indígena." },
+  { id: 23, term: "Retablo Ayacuchano", category: "Cultura", definition: "Evolución del 'Cajón de San Marcos'. Máxima expresión del sincretismo narrativo popular y evangelización portátil." },
+  { id: 24, term: "Mascaipacha Eclesiástica", category: "Cultura", definition: "Representación visual donde el símbolo de poder inca (borla roja) corona figuras cristianas o al alféreces real." },
+  { id: 25, term: "Santurantikuy", category: "Cultura", definition: "'Venta de Santos'. Feria tradicional cusqueña que demuestra la economía y artesanía generada alrededor de la fe." },
+  { id: 26, term: "La Procesión", category: "Cultura", definition: "Formato de culto público por excelencia. Reemplazó desplazamientos de momias, permitiendo 'caminar con Dios'." },
+  { id: 27, term: "Arquitectura Misional", category: "Cultura", definition: "Estilo de construcción (adobe, quincha) adaptado a la geografía, centro de la vida urbana en selva y sierra." },
+  { id: 28, term: "Huacas Cristianizadas", category: "Cultura", definition: "Lugares sagrados prehispánicos marcados con cruces para consagrar el espacio geográfico a la nueva fe." },
+  { id: 29, term: "Danzas de Moros y Cristianos", category: "Cultura", definition: "Adaptadas como danzas de 'Incas y Españoles' o 'Ángeles y Demonios', ritualizando la historia." },
+  { id: 30, term: "Teología Visual", category: "Cultura", definition: "Uso del arte mural y escultórico como medio didáctico principal en una sociedad visualmente sofisticada." },
+  { id: 73, term: "Capac Cuna", category: "Cultura", definition: "La lista oficial de los gobernantes incas. En el virreinato, esta lista se extendió para incluir a los Reyes de España como sucesores legítimos." },
+  { id: 74, term: "Mascaipacha", category: "Cultura", definition: "La borla imperial roja, símbolo máximo del poder inca. Fue reconocida y usada por los nobles incas en ceremonias católicas virreinales." },
+  { id: 75, term: "Quipu", category: "Cultura", definition: "Sistema de cuerdas y nudos para contabilidad y registro. Se siguió usando en la administración virreinal temprana como herramienta de orden." },
+  { id: 76, term: "Quechua", category: "Cultura", definition: "Lengua General (Runa Simi). La Iglesia la sistematizó y expandió más que los propios Incas, usándola para la evangelización y la cultura." },
+  { id: 77, term: "Pukina", category: "Cultura", definition: "La 'lengua secreta' de la nobleza incaica, distinta al quechua. Su rastro se encuentra en el portal pentalingüe de Andahuaylillas." },
+  { id: 78, term: "Cápac Unáncha", category: "Cultura", definition: "El estandarte real. Símbolo de soberanía que el Alférez Real (descendiente inca) portaba en las procesiones junto a la Mascaipacha." },
+  { id: 79, term: "Punchaw", category: "Cultura", definition: "El ídolo del Sol del día. Estatua de oro que contenía las cenizas de los corazones de los incas, reemplazada teológicamente por la Custodia." },
+  { id: 80, term: "Tupayauri", category: "Cultura", definition: "El cetro de oro de Manco Cápac. Símbolo de poder fundacional que se fusionó con los bastones de mando de las autoridades virreinales." },
+  { id: 81, term: "Blasón de la Conquista", category: "Cultura", definition: "Escudos de armas otorgados a ciudades y nobles indígenas, mezclando heráldica europea (leones, castillos) con andina (jaguares, serpientes)." },
+
+  // III. VIDA SOCIAL Y ÉTICA
+  { id: 31, term: "Derecho de Gentes", category: "Social", definition: "Base filosófica (Escuela de Salamanca) que estableció la humanidad y derechos naturales de los indígenas." },
+  { id: 32, term: "Leyes de Indias", category: "Social", definition: "Cuerpo legislativo de la Corona para proteger al indígena de abusos, garantizando tierras comunales." },
+  { id: 33, term: "Protectoría de Indios", category: "Social", definition: "Institución virreinal encargada de representar legalmente a los indígenas, como una 'Defensoría del Pueblo'." },
+  { id: 34, term: "Curaca (Cacique)", category: "Social", definition: "Autoridad indígena bisagra. Mantenía el orden local y enlazaba el mundo andino con el aparato virreinal." },
+  { id: 35, term: "Varayoc", category: "Social", definition: "Sistema de autoridad comunal indígena (alcaldes de indios) instituido en el Virreinato, vigente hasta hoy." },
+  { id: 36, term: "Ayllu", category: "Social", definition: "Célula social andina basada en el parentesco. La Iglesia la preservó al convertirla en base parroquial rural." },
+  { id: 37, term: "Cofradía", category: "Social", definition: "Asociación laica de fieles. Funcionaba como banco, seguro de salud y centro festivo, reemplazando funciones del Ayllu." },
+  { id: 38, term: "Ayni y Minka", category: "Social", definition: "Sistemas de reciprocidad y trabajo comunal andino integrados en la construcción de obras públicas virreinales." },
+  { id: 39, term: "Hospitales de Naturales", category: "Social", definition: "Red de salud pionera fundada por la Iglesia (ej. Hospital de Santa Ana) para atención diferenciada indígena." },
+  { id: 40, term: "Doctrina", category: "Social", definition: "Pueblo de indios organizado por la Iglesia. Centro de civilización técnica, agrícola y educativa." },
+  { id: 41, term: "Universidad de San Marcos", category: "Social", definition: "Fundada en 1551. Foco intelectual donde se educó la élite y se estableció la cátedra de Quechua." },
+  { id: 42, term: "Colegio de Caciques", category: "Social", definition: "Instituciones (como San Francisco de Borja) para educar a la nobleza indígena, creando una élite inca-hispana." },
+  { id: 43, term: "Mita Virreinal", category: "Social", definition: "Adaptación del trabajo rotativo incaico. Base económica regulada legalmente, distinta a la esclavitud chattel." },
+  { id: 44, term: "Cabildo de Indios", category: "Social", definition: "Órgano de gobierno municipal exclusivo para las repúblicas de indios, permitiendo autogobierno local." },
+  { id: 45, term: "Resguardo Indígena", category: "Social", definition: "Tierras comunales protegidas por título real, inalienables, base de las comunidades campesinas actuales." },
+  { id: 82, term: "Francisco Pizarro", category: "Social", definition: "Conquistador y fundador. Estableció la alianza con las panacas huascaristas contra Atahualpa, dando inicio al Perú mestizo." },
+  { id: 83, term: "Pachacútec", category: "Social", definition: "El gran organizador del Tahuantinsuyo. Su búsqueda del dios ordenador (Pachayachachic) preparó filosóficamente a los Andes para el monoteísmo." },
+  { id: 84, term: "Atahualpa", category: "Social", definition: "Considerado usurpador y tirano por las panacas cusqueñas. Su ejecución fue vista por muchos nobles incas como justicia divina." },
+  { id: 85, term: "Huascar", category: "Social", definition: "Inca legítimo del Cusco. Su asesinato por las tropas de Atahualpa motivó a su familia a aliarse con Pizarro." },
+  { id: 86, term: "Orden Jesuita", category: "Social", definition: "La 'Compañía de Jesús'. Educadores de la nobleza inca y arquitectos de la cultura barroca. Su símbolo (sol) resonó con la mística andina." },
+  { id: 87, term: "Lima", category: "Social", definition: "Ciudad de los Reyes. Centro político y administrativo del Virreinato, donde convivían todas las castas del imperio." },
+  { id: 88, term: "Cuzco", category: "Social", definition: "La 'Roma de América'. Centro histórico y espiritual donde se mantuvo la nobleza incaica con sus fueros y tradiciones." },
+  { id: 89, term: "Real Felipe", category: "Social", definition: "Fortaleza del Callao. Símbolo del poder militar y defensa del Virreinato frente a piratas y potencias enemigas." },
+  { id: 90, term: "Beatriz Clara Coya", category: "Social", definition: "Princesa inca, heredera de Sayri Túpac. Su matrimonio con Martín García de Loyola simboliza la unión de sangres y coronas." },
+  { id: 91, term: "Martín García de Loyola", category: "Social", definition: "Capitán español, sobrino de San Ignacio. Al casarse con la Ñusta Beatriz, selló la alianza estratégica entre la Corona y los Incas." },
+  { id: 92, term: "Vicente Chimor", category: "Social", definition: "Cacique de la costa norte que reclamó al Rey sus derechos nobiliarios, demostrando la capacidad legal de la nobleza indígena." },
+
+  // IV. ESPIRITUALIDAD Y SÍMBOLOS
+  { id: 46, term: "Señor de los Milagros", category: "Espiritualidad", definition: "El 'Cristo de la Unidad'. Integró el componente afroperuano, indígena y criollo bajo el color morado." },
+  { id: 47, term: "Taytacha Temblores", category: "Espiritualidad", definition: "El 'Cristo Moreno' del Cusco. Su color oscuro valida la tez mestiza y fusiona sufrimiento andino y cristiano." },
+  { id: 48, term: "Santa Rosa de Lima", category: "Espiritualidad", definition: "Primera Santa de América. Símbolo de que la tierra peruana era fértil para la santidad universal." },
+  { id: 49, term: "San Martín de Porres", category: "Espiritualidad", definition: "Santo de la escoba. Representa la dignidad de los oficios humildes y la superación de barreras raciales." },
+  { id: 50, term: "Virgen de la Candelaria", category: "Espiritualidad", definition: "Máxima expresión de fe del Altiplano. Fusiona el culto a la Pachamama con la Virgen María." },
+  { id: 51, term: "Cruz de Motupe", category: "Espiritualidad", definition: "Devoción de 'hallazgo'. La cruz en el cerro (Apu) que sacraliza la geografía norteña." },
+  { id: 52, term: "Santidad Mestiza", category: "Espiritualidad", definition: "Reconocimiento de que la santidad no es europea. Incluye figuras como el indio Nicolás de Ayllón." },
+  { id: 53, term: "Beatitas", category: "Espiritualidad", definition: "Mujeres laicas consagradas que sostenían la caridad y la oración en las ciudades sin estar en conventos." },
+  { id: 54, term: "Apus Tutelares", category: "Espiritualidad", definition: "Visión Católica: respeto a la naturaleza no como dios, sino como creación, permitiendo subsistir el respeto cultural." },
+  { id: 55, term: "La Dolorosa", category: "Espiritualidad", definition: "Advocación mariana preferida en el Perú, resonando con el sentimiento trágico de la cosmovisión andina." },
+  { id: 56, term: "Exvotos", category: "Espiritualidad", definition: "Pequeñas ofrendas (milagros) que demuestran la relación tangible y de agradecimiento con lo divino." },
+  { id: 57, term: "Sarita Colonia", category: "Espiritualidad", definition: "Culto popular. Representa la necesidad del migrante y marginado de encontrar protección espiritual." },
+  { id: 58, term: "Vocación Imperial", category: "Espiritualidad", definition: "Conciencia histórica de que el Perú fue centro irradiador de fe y cultura para toda Sudamérica." },
+  { id: 59, term: "Tierra de Santos", category: "Espiritualidad", definition: "Título dado al Perú por la inusual concentración de santos contemporáneos en el siglo XVII." },
+  { id: 60, term: "Firme y Feliz por la Unión", category: "Espiritualidad", definition: "Lema nacional que resume el objetivo: la peruanidad solo es viable a través de la unión de sus herencias." },
+  { id: 93, term: "Promesa del Sol", category: "Espiritualidad", definition: "Mito fundacional donde el Sol promete a Pachacútec un imperio eterno. Prefigura la llegada del 'Verdadero Sol' (Cristo) que da sentido a la historia." },
+  { id: 94, term: "Wiracocha", category: "Espiritualidad", definition: "El Dios hacedor. Concepto andino del creador supremo que facilitó la comprensión y aceptación del Dios cristiano." },
+  { id: 95, term: "Jesucristo", category: "Espiritualidad", definition: "El 'Sol de Justicia' y 'Luz del Mundo'. Su figura completó y perfeccionó la adoración solar incaica sin contradecirla." },
+  { id: 96, term: "Santo Toribio de Mogrovejo", category: "Espiritualidad", definition: "Arzobispo de Lima y patrono del episcopado latinoamericano. Defensor de los indios, aprendió quechua para evangelizar corazón a corazón." },
+  { id: 97, term: "Pachacamaca", category: "Espiritualidad", definition: "'El que anima al mundo'. Término que Garcilaso de la Vega reivindica para referirse al Dios cristiano en lengua quechua." },
+  { id: 98, term: "Incarri", category: "Espiritualidad", definition: "Mito mesiánico andino sobre el regreso del Inca para restaurar el orden. Refleja la esperanza de restauración y justicia." },
+  { id: 99, term: "San Francisco de Borja", category: "Espiritualidad", definition: "Santo jesuita de sangre real (Gandía). Patrón de la nobleza indígena, modelo de santidad para los colegios de caciques." },
+  { id: 100, term: "La Cruz de la Conquista", category: "Espiritualidad", definition: "Símbolo fundacional traído por los dominicos (Vicente de Valverde), marcando el inicio de la nueva era espiritual del Perú." }
+];
+
+// -------------------- 4) Construcción enriquecida --------------------
+const enriched = baseGlossary.map((item) => {
+  // keywords: term + category + tokens relevantes de definición
+  const keywords = uniq([
+    ...mk([item.term, item.category]),
+    ...tokenize(item.definition),
+  ]);
+
+  return {
+    ...item,
+    axis: axisFromCategory(item.category),
+    keywords,
+    // seeAlso se rellenará después (auto)
+    seeAlso: [],
+  };
+});
+
+// -------------------- 5) Reglas “inteligentes” para vínculos fuertes --------------------
+// Esto corrige casos donde la similitud textual NO alcanza pero el vínculo conceptual sí.
+const STRONG_LINKS = {
+  // Símbolos incas / ceremonial
+  "mascaipacha": ["Panaca Real", "Cápac Unáncha", "Corpus Christi Cusqueño", "Blasón Indígena"],
+  "capac unancha": ["Mascaipacha", "Panaca Real", "Corpus Christi Cusqueño"],
+  "punchaw": ["Mascaipacha", "Sol de Justicia", "Jesucristo", "Corpus Christi Cusqueño"],
+  "tupayauri": ["Varayoc", "Cabildo de Indios", "Monarquía Peruana"],
+  "quipu": ["Mita Virreinal", "Ayni y Minka", "Doctrina"],
+
+  // Evangelización / lenguas
+  "quechua": ["Quechua Pastoral", "Hanacpachap Cussicuinin", "Santo Toribio de Mogrovejo", "Universidad de San Marcos"],
+  "pastoral": ["Quechua", "Concilios Limenses", "Santo Toribio de Mogrovejo"], // “Concilios Limenses” no está como término, se ignorará si no existe.
+
+  // Pacto / nobleza / fueros
+  "pacto hispano-inca": ["Cédula de Honores", "Reinos del Perú", "Panaca Real", "Monarquía Peruana", "Virreinato"],
+  "panaca real": ["Mascaipacha", "Corpus Christi Cusqueño", "Cédula de Honores", "Blasón Indígena"],
+  "cedula de honores": ["Reinos del Perú", "Panaca Real", "Blasón Indígena"],
+  "reinos del peru": ["Virreinato", "Casa Habsburgo", "Leyes de Indias", "Protectoría de Indios"],
+
+  // Identidad / síntesis
+  "peruanidad": ["Mestizaje", "Patria Peruana", "Nación Peruana", "Leyenda Negra", "Perú"],
+  "mestizaje": ["Peruanidad", "Inca Garcilaso de la Vega", "Taytacha Temblores", "Señor de los Milagros"],
+
+  // Borbones / tensiones
+  "casa borbon": ["Orden Jesuita", "Liberalismo", "Estado Peruano"],
+  "orden jesuita": ["Barroco Andino", "Escuela Cusqueña", "Casa Borbón", "San Francisco de Borja"],
+
+  // Devociones / unidad
+  "senor de los milagros": ["Tierra de Santos", "Santa Rosa de Lima", "San Martín de Porres"],
+  "taytacha temblores": ["Cusco", "Mestizaje", "Sol de Justicia"], // “Cusco” no es término exacto; se ignora si no existe.
+  "virgen de la candelaria": ["Apus Tutelares", "Exvotos", "Santidad Mestiza"],
+};
+
+// -------------------- 6) Similaridad: Jaccard + bono por mismo eje --------------------
+const jaccard = (aSet, bSet) => {
+  let inter = 0;
+  for (const x of aSet) if (bSet.has(x)) inter++;
+  const union = aSet.size + bSet.size - inter;
+  return union === 0 ? 0 : inter / union;
+};
+
+const buildIndex = (list) => {
+  const byTerm = new Map();
+  const byNormTerm = new Map();
+  for (const it of list) {
+    byTerm.set(it.term, it);
+    byNormTerm.set(normalize(it.term), it.term);
+  }
+  return { byTerm, byNormTerm };
+};
+
+const { byTerm, byNormTerm } = buildIndex(enriched);
+
+// -------------------- 7) Auto seeAlso --------------------
+const MAX_SEE_ALSO = 6;
+
+// Ajusta estos umbrales si quieres más/menos enlaces
+const BASE_THRESHOLD = 0.10;  // similitud mínima
+const SAME_AXIS_BONUS = 0.03; // bono si comparten axis
+const STRONG_BOOST = 0.25;    // boost por regla fuerte
+
+const existsTerm = (term) => byTerm.has(term);
+
+// normaliza para buscar claves de STRONG_LINKS
+const normKey = (term) => normalize(term).replace(/\s+/g, " ").trim();
+
+const getStrongTargets = (item) => {
+  const key1 = normKey(item.term);
+  const targets = STRONG_LINKS[key1] || [];
+  // También probamos claves “parciales” por tokens muy distintivos
+  // (ej.: “Mascaipacha Eclesiástica” -> “mascaipacha”)
+  const tokens = tokenize(item.term);
+  for (const t of tokens) {
+    if (STRONG_LINKS[t]) targets.push(...STRONG_LINKS[t]);
+  }
+  return uniq(targets).filter(existsTerm);
+};
+
+export const peruanidadGlossary = (() => {
+  // Precomputa sets de keywords para similitud rápida
+  const keywordSets = new Map(
+    enriched.map((it) => [it.term, new Set(it.keywords)])
+  );
+
+  return enriched.map((item) => {
+    const a = keywordSets.get(item.term);
+    const strongTargets = new Set(getStrongTargets(item));
+
+    // Score candidatos
+    const scored = [];
+    for (const other of enriched) {
+      if (other.term === item.term) continue;
+
+      const b = keywordSets.get(other.term);
+
+      let score = jaccard(a, b);
+
+      // Bono si comparten eje
+      if (other.axis === item.axis) score += SAME_AXIS_BONUS;
+
+      // Boost si hay link fuerte (regla)
+      if (strongTargets.has(other.term)) score += STRONG_BOOST;
+
+      // Filtra por umbral (pero deja pasar si es link fuerte)
+      const isStrong = strongTargets.has(other.term);
+      if (score >= BASE_THRESHOLD || isStrong) {
+        scored.push({ term: other.term, score });
+      }
+    }
+
+    // Ordena y toma top
+    scored.sort((x, y) => y.score - x.score);
+    const seeAlso = scored.slice(0, MAX_SEE_ALSO).map((x) => x.term);
+
+    return { ...item, seeAlso };
+  });
+})();
+
+// -------------------- 8) Helpers de uso --------------------
+export const indexByTerm = (list = peruanidadGlossary) =>
+  Object.fromEntries(list.map((x) => [normalize(x.term), x]));
+
+export const filterBy = (
+  { axis, category, q } = {},
+  list = peruanidadGlossary
+) => {
+  const query = normalize(q || "").trim();
+  return list.filter((item) => {
+    if (axis && item.axis !== axis) return false;
+    if (category && item.category !== category) return false;
+    if (!query) return true;
+
+    const hay = normalize(
+      [
+        item.term,
+        item.category,
+        item.axis,
+        item.definition,
+        ...(item.keywords || []),
+        ...(item.seeAlso || []),
+      ].join(" ")
+    );
+
+    return hay.includes(query);
+  });
+};
+
+// Si quieres: obtener “relacionados” ya resueltos a objetos
+export const getRelatedObjects = (term, list = peruanidadGlossary) => {
+  const idx = indexByTerm(list);
+  const item = idx[normalize(term)];
+  if (!item) return [];
+  return (item.seeAlso || [])
+    .map((t) => idx[normalize(t)])
+    .filter(Boolean);
+};
+
 
         // --- COLLECTABLE CARDS DATA (20 items) ---
         // IMÁGENES GENÉRICAS AÑADIDAS
