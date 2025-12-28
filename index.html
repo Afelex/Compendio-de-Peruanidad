@@ -53,9 +53,18 @@
             'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
           },
           keyframes: {
-            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-            slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-            popIn: { '0%': { opacity: '0', transform: 'scale(0.5)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            popIn: {
+              '0%': { opacity: '0', transform: 'scale(0.5)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            }
           }
         }
       }
@@ -64,12 +73,9 @@
 
   <style>
     body { background-color: #FAFAF9; color: #1a1a1a; }
-
     .bg-pattern {
       background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231a1a1a' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
     }
-
-    /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #F5F5F4; }
     ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
@@ -78,828 +84,1129 @@
     .card-shiny { position: relative; overflow: hidden; }
     .card-shiny::after {
       content: "";
-      position: absolute; top: -50%; left: -50%;
-      width: 200%; height: 200%;
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
       background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
       transform: rotate(30deg) translate(-100%, -100%);
       transition: transform 0.5s;
     }
-    .card-shiny:hover::after { transform: rotate(30deg) translate(100%, 100%); transition: transform 0.7s; }
-
-    /* ✅ Line clamp fallback (Tailwind CDN no trae el plugin line-clamp por defecto) */
-    .line-clamp-3{
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    .card-shiny:hover::after {
+      transform: rotate(30deg) translate(100%, 100%);
+      transition: transform 0.7s;
     }
   </style>
 </head>
 
 <body class="bg-stone-50 bg-pattern min-h-screen">
-<div id="root"></div>
+  <div id="root"></div>
 
-<script type="text/babel">
-  const { useState, useEffect, useMemo, useRef } = React;
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
 
-  // --- ICON COMPONENTS ---
-  const Icon = ({ path, size = 24, className = "" }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
-         fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-         className={className}>
-      {path}
-    </svg>
-  );
-
-  const Icons = {
-    Book: <g><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></g>,
-    Sun: <g><circle cx="12" cy="12" r="4" /><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></g>,
-    Users: <g><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g>,
-    Church: <g><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M17 21v-5.5a2.5 2.5 0 0 0-5 0V21"/></g>,
-    Search: <g><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></g>,
-    X: <g><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></g>,
-    Info: <g><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></g>,
-    Scroll: <g><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2a2 2 0 0 0-2 2v2.5" /><path d="M15 17v5" /></g>,
-    GraduationCap: <g><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></g>,
-    Crown: <g><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" /></g>,
-    Heart: <g><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></g>,
-    Copy: <g><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g>,
-    Brain: <g><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-4.04z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-4.04z"/></g>,
-    Shuffle: <g><polyline points="16 3 21 3 21 8" /><line x1="4" y1="20" x2="21" y2="3" /><polyline points="21 16 21 21 16 21" /><line x1="15" y1="15" x2="21" y2="21" /><line x1="4" y1="4" x2="9" y2="9" /></g>,
-    Feather: <g><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" /><line x1="16" y1="8" x2="2" y2="22" /><line x1="17.5" y1="15" x2="9" y2="15" /></g>,
-    ChevronRight: <g><polyline points="9 18 15 12 9 6" /></g>,
-    Image: <g><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></g>,
-    Lock: <g><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></g>,
-    Unlock: <g><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></g>,
-    Star: <g><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></g>
-  };
-
-  // --- DATA ---
-  const compendioData = [
-    { id: 1, term: "Peruanidad", category: "Identidad", definition: "Concepto de Víctor Andrés Belaunde. Define al Perú no como una suma de partes, sino como una 'síntesis viviente', una nueva entidad espiritual y biológica indivisible." },
-    { id: 2, term: "Pacto Hispano-Inca", category: "Identidad", definition: "Alianza fundacional entre la Corona de Castilla y las Panacas del Cusco, permitiendo la transición legal del Tahuantinsuyo al Virreinato." },
-    { id: 3, term: "Incas Católicos", category: "Identidad", definition: "Nobleza incaica que adoptó el cristianismo, conservó privilegios y actuó como vehículo de evangelización (ej. Cristóbal Paullu Inca)." },
-    { id: 4, term: "Praeparatio Evangelica", category: "Identidad", definition: "Teoría que sostiene que el Incanato fue una preparación providencial, con su moral y orden, para la recepción del Evangelio." },
-    { id: 5, term: "Semillas del Verbo", category: "Identidad", definition: "Concepto patrístico: la verdad divina ya estaba dispersa en la cultura andina (ej. idea de un creador) antes de la llegada de los misioneros." },
-    { id: 6, term: "Mestizaje", category: "Identidad", definition: "La sustancia de la nación. Fusión biológica y cultural que trasciende la raza para convertirse en una categoría espiritual de unidad." },
-    { id: 7, term: "Pachayachachic", category: "Identidad", definition: "Atributo de Viracocha entendido como 'Ordenador del Mundo'. Identificado con el Dios Creador cristiano para facilitar la conversión." },
-    { id: 8, term: "Sol de Justicia", category: "Identidad", definition: "Proceso de sustitución simbólica donde el culto al sol físico (Inti) fue redirigido hacia Cristo, el 'Sol de Justicia'." },
-    { id: 9, term: "Panaca Real", category: "Identidad", definition: "Estructura de linaje incaica que la Iglesia respetó y reconoció legalmente durante tres siglos." },
-    { id: 10, term: "Cédula de Honores", category: "Identidad", definition: "Decreto de Carlos V que reconocía a los nobles incas como 'Grandes de España', con estatus superior al plebeyo español." },
-    { id: 11, term: "Reinos del Perú", category: "Identidad", definition: "Definición jurídica del estatus político del Perú bajo la monarquía hispánica; un Reino con igualdad jurídica, no una colonia." },
-    { id: 12, term: "Quechua Pastoral", category: "Identidad", definition: "Versión estandarizada del quechua, desarrollada por la Iglesia (Concilios Limenses) para la evangelización y la alta cultura." },
-    { id: 13, term: "Inca Garcilaso de la Vega", category: "Identidad", definition: "El arquetipo del peruano. Primer mestizo biológico y espiritual que reconcilió sus dos herencias en los 'Comentarios Reales'." },
-    { id: 14, term: "Blasón Indígena", category: "Identidad", definition: "Heráldica otorgada a los nobles incas, combinando simbología europea (yelmos) con andina (mascaipacha, serpientes)." },
-    { id: 15, term: "Leyenda Negra", category: "Identidad", definition: "Narrativa propagandística que busca fracturar la identidad peruana presentando la historia solo como víctimas y victimarios." },
-    { id: 61, term: "Perú", category: "Identidad", definition: "Nombre que no es quechua ni español, nacido del mestizaje. Representa la nueva realidad histórica que trasciende al Tahuantinsuyo." },
-    { id: 62, term: "Gran Perú", category: "Identidad", definition: "El territorio histórico que abarcó casi toda Sudamérica bajo el Virreinato, centro irradiador de civilización desde Panamá hasta Tierra del Fuego." },
-    { id: 63, term: "Monarquía Peruana", category: "Identidad", definition: "Tradición de gobierno natural de los Andes, iniciada con los Incas y continuada con los Reyes de España, basada en la lealtad y el pacto." },
-    { id: 64, term: "Estado Peruano", category: "Identidad", definition: "La estructura jurídica y política moderna, que muchas veces entró en conflicto con la nación histórica al ignorar a las comunidades y panacas." },
-    { id: 65, term: "Patria Peruana", category: "Identidad", definition: "Del latín 'Pater'. La tierra de los padres. Implica amar la herencia recibida tanto de la raíz andina como de la hispana." },
-    { id: 66, term: "Nación Peruana", category: "Identidad", definition: "La comunidad de personas unidas por el mestizaje, la fe y la historia común, más allá de las divisiones raciales o de clase." },
-    { id: 67, term: "Imperio Peruano", category: "Identidad", definition: "Concepto geopolítico. El Perú nació con vocación imperial (Inca y Virreinal) para integrar el continente, no para ser una república aislada." },
-    { id: 68, term: "Virreinato", category: "Identidad", definition: "No fue una colonia, sino un Reino integrante de la Monarquía Hispánica, con sus propias cortes, nobleza, moneda y administración." },
-    { id: 69, term: "Casa Habsburgo", category: "Identidad", definition: "Dinastía (Austrias) que gobernó durante el auge del pacto Hispano-Inca, respetando la autonomía de los fueros indígenas y la nobleza local." },
-    { id: 70, term: "Casa Borbón", category: "Identidad", definition: "Dinastía reformista (s. XVIII) que centralizó el poder, rompió pactos con los caciques y expulsó a los jesuitas, detonando rebeliones." },
-    { id: 71, term: "Liberalismo", category: "Identidad", definition: "Ideología importada que, al fundar la República, rompió la estructura comunitaria andina y la protección de las tierras indígenas." },
-    { id: 72, term: "Monarquismo", category: "Identidad", definition: "Corriente política (San Martín, Túpac Amaru) que entendía que el Perú, por su historia, funcionaba mejor bajo una figura de autoridad tradicional." },
-
-    { id: 16, term: "Barroco Andino", category: "Cultura", definition: "Estilo artístico de fusión. Caracterizado por la saturación decorativa y el uso de flora/fauna local en templos cristianos." },
-    { id: 17, term: "Corpus Christi Cusqueño", category: "Cultura", definition: "La 'Fiesta Nacional' surandina. Procesión eucarística que integró la estructura de las Panacas y Ayllus en el culto católico." },
-    { id: 18, term: "Escuela Cusqueña", category: "Cultura", definition: "Movimiento pictórico indígena/mestizo. Libertad estética y uso del 'brocateado' (pan de oro sobre las telas)." },
-    { id: 19, term: "Sincretismo Virtuoso", category: "Cultura", definition: "Estrategia de 'bautizar' costumbres locales en lugar de eliminarlas, dándoles un nuevo significado cristiano." },
-    { id: 20, term: "Ángel Arcabucero", category: "Cultura", definition: "Iconografía única: ángeles vestidos como nobles españoles armados con arcabuces, asociados con el rayo (Illapa)." },
-    { id: 21, term: "Hanacpachap Cussicuinin", category: "Cultura", definition: "'La Alegría del Cielo'. Primera obra polifónica compuesta en América (1631), escrita en quechua." },
-    { id: 22, term: "Niño Manuelito", category: "Cultura", definition: "Representación andina del Niño Jesús, a menudo vestido como Inca, simbolizando cercanía con el sufrimiento indígena." },
-    { id: 23, term: "Retablo Ayacuchano", category: "Cultura", definition: "Evolución del 'Cajón de San Marcos'. Máxima expresión del sincretismo narrativo popular y evangelización portátil." },
-    { id: 24, term: "Mascaipacha Eclesiástica", category: "Cultura", definition: "Fenómeno visual donde el símbolo de poder inca (borla roja) corona figuras cristianas o alféreces reales en el arte." },
-    { id: 25, term: "Santurantikuy", category: "Cultura", definition: "'Venta de Santos'. Feria tradicional cusqueña que demuestra la economía y artesanía generada alrededor de la fe." },
-    { id: 26, term: "La Procesión", category: "Cultura", definition: "Formato de culto público por excelencia. Reemplazó desplazamientos de momias, permitiendo 'caminar con Dios'." },
-    { id: 27, term: "Arquitectura Misional", category: "Cultura", definition: "Estilo de construcción (adobe, quincha) adaptado a la geografía, centro de la vida urbana en selva y sierra." },
-    { id: 28, term: "Huacas Cristianizadas", category: "Cultura", definition: "Lugares sagrados prehispánicos marcados con cruces para consagrar el espacio geográfico a la nueva fe." },
-    { id: 29, term: "Danzas de Moros y Cristianos", category: "Cultura", definition: "Adaptadas como danzas de 'Incas y Españoles' o 'Ángeles y Demonios', ritualizando la historia." },
-    { id: 30, term: "Teología Visual", category: "Cultura", definition: "Uso del arte mural y escultórico como medio didáctico principal en una sociedad visualmente sofisticada." },
-
-    { id: 31, term: "Derecho de Gentes", category: "Social", definition: "Base filosófica (Escuela de Salamanca) que estableció la humanidad y derechos naturales de los indígenas." },
-    { id: 32, term: "Leyes de Indias", category: "Social", definition: "Cuerpo legislativo de la Corona para proteger al indígena de abusos, garantizando tierras comunales." },
-    { id: 33, term: "Protectoría de Indios", category: "Social", definition: "Institución virreinal encargada de representar legalmente a los indígenas, como una 'Defensoría del Pueblo'." },
-    { id: 34, term: "Curaca (Cacique)", category: "Social", definition: "Autoridad indígena bisagra. Mantenía el orden local y enlazaba el mundo andino con el aparato virreinal." },
-    { id: 35, term: "Varayoc", category: "Social", definition: "Sistema de autoridad comunal indígena (alcaldes de indios) instituido en el Virreinato, vigente hasta hoy." },
-    { id: 36, term: "Ayllu", category: "Social", definition: "Célula social andina basada en el parentesco. La Iglesia la preservó al convertirla en base parroquial rural." },
-    { id: 37, term: "Cofradía", category: "Social", definition: "Asociación laica de fieles. Funcionaba como banco, seguro de salud y centro festivo, reemplazando funciones del Ayllu." },
-    { id: 38, term: "Ayni y Minka", category: "Social", definition: "Sistemas de reciprocidad y trabajo comunal andino integrados en la construcción de obras públicas virreinales." },
-    { id: 39, term: "Hospitales de Naturales", category: "Social", definition: "Red de salud pionera fundada por la Iglesia (ej. Hospital de Santa Ana) para atención diferenciada indígena." },
-    { id: 40, term: "Doctrina", category: "Social", definition: "Pueblo de indios organizado por la Iglesia. Centro de civilización técnica, agrícola y educativa." },
-    { id: 41, term: "Universidad de San Marcos", category: "Social", definition: "Fundada en 1551. Foco intelectual donde se educó la élite y se estableció la cátedra de Quechua." },
-    { id: 42, term: "Colegio de Caciques", category: "Social", definition: "Instituciones (como San Francisco de Borja) para educar a la nobleza indígena, creando una élite inca-hispana." },
-    { id: 43, term: "Mita Virreinal", category: "Social", definition: "Adaptación del trabajo rotativo incaico. Base económica regulada legalmente, distinta a la esclavitud chattel." },
-    { id: 44, term: "Cabildo de Indios", category: "Social", definition: "Órgano de gobierno municipal exclusivo para las repúblicas de indios, permitiendo autogobierno local." },
-    { id: 45, term: "Resguardo Indígena", category: "Social", definition: "Tierras comunales protegidas por título real, inalienables, base de las comunidades campesinas actuales." },
-
-    { id: 46, term: "Señor de los Milagros", category: "Espiritualidad", definition: "El 'Cristo de la Unidad'. Integró el componente afroperuano, indígena y criollo bajo el color morado." },
-    { id: 47, term: "Taytacha Temblores", category: "Espiritualidad", definition: "El 'Cristo Moreno' del Cusco. Su color oscuro valida la tez mestiza y fusiona sufrimiento andino y cristiano." },
-    { id: 48, term: "Santa Rosa de Lima", category: "Espiritualidad", definition: "Primera Santa de América. Símbolo de que la tierra peruana era fértil para la santidad universal." },
-    { id: 49, term: "San Martín de Porres", category: "Espiritualidad", definition: "Santo de la escoba. Representa la dignidad de los oficios humildes y la superación de barreras raciales." },
-    { id: 50, term: "Virgen de la Candelaria", category: "Espiritualidad", definition: "Máxima expresión de fe del Altiplano. Fusiona el culto a la Pachamama con la Virgen María." },
-    { id: 51, term: "Cruz de Motupe", category: "Espiritualidad", definition: "Devoción de 'hallazgo'. La cruz en el cerro (Apu) que sacraliza la geografía norteña." },
-    { id: 52, term: "Santidad Mestiza", category: "Espiritualidad", definition: "Reconocimiento de que la santidad no es europea. Incluye figuras como el indio Nicolás de Ayllón." },
-    { id: 53, term: "Beatitas", category: "Espiritualidad", definition: "Mujeres laicas consagradas que sostenían la caridad y la oración en las ciudades sin estar en conventos." },
-    { id: 54, term: "Apus Tutelares", category: "Espiritualidad", definition: "Visión Católica: respeto a la naturaleza no como dios, sino como creación, permitiendo subsistir el respeto cultural." },
-    { id: 55, term: "La Dolorosa", category: "Espiritualidad", definition: "Advocación mariana preferida en el Perú, resonando con el sentimiento trágico de la cosmovisión andina." },
-    { id: 56, term: "Exvotos", category: "Espiritualidad", definition: "Pequeñas ofrendas (milagros) que demuestran la relación tangible y de agradecimiento con lo divino." },
-    { id: 57, term: "Sarita Colonia", category: "Espiritualidad", definition: "Culto popular. Representa la necesidad del migrante y marginado de encontrar protección espiritual." },
-    { id: 58, term: "Vocación Imperial", category: "Espiritualidad", definition: "Conciencia histórica de que el Perú fue centro irradiador de fe y cultura para toda Sudamérica." },
-    { id: 59, term: "Tierra de Santos", category: "Espiritualidad", definition: "Título dado al Perú por la inusual concentración de santos contemporáneos en el siglo XVII." },
-    { id: 60, term: "Firme y Feliz por la Unión", category: "Espiritualidad", definition: "Lema nacional que resume el objetivo: la peruanidad solo es viable a través de la unión de sus herencias." }
-  ];
-
-  const galleryData = [
-    { id: 'c1', name: "Pachacútec", title: "El Organizador", desc: "El gran transformador del mundo andino.", color: "from-yellow-600 to-yellow-800", image: "https://placehold.co/400x600/b45309/FFF?text=Pachacutec" },
-    { id: 'c2', name: "Atahualpa", title: "El Último Soberano", desc: "Figura trágica del encuentro de dos mundos.", color: "from-red-600 to-red-800", image: "https://placehold.co/400x600/991b1b/FFF?text=Atahualpa" },
-    { id: 'c3', name: "Francisco Pizarro", title: "El Fundador", desc: "Marqués gobernador que inició el mestizaje.", color: "from-gray-600 to-gray-800", image: "https://placehold.co/400x600/4b5563/FFF?text=Pizarro" },
-    { id: 'c4', name: "Isabel la Católica", title: "Reina Protectora", desc: "Iniciadora de los derechos de los indígenas.", color: "from-blue-600 to-blue-800", image: "https://placehold.co/400x600/1e40af/FFF?text=Isabel" },
-    { id: 'c5', name: "Inca Garcilaso", title: "Primer Mestizo", desc: "La pluma que unió los Andes con España.", color: "from-purple-600 to-purple-800", image: "https://placehold.co/400x600/6b21a8/FFF?text=Garcilaso" },
-    { id: 'c6', name: "Santa Rosa", title: "Patrona de América", desc: "Mística limeña que elevó al Perú a los altares.", color: "from-pink-600 to-pink-800", image: "https://placehold.co/400x600/9d174d/FFF?text=Santa+Rosa" },
-    { id: 'c7', name: "San Martín de Porres", title: "Santo de la Escoba", desc: "Símbolo de humildad y unión de razas.", color: "from-stone-600 to-stone-800", image: "https://placehold.co/400x600/44403c/FFF?text=San+Martin" },
-    { id: 'c8', name: "Túpac Amaru II", title: "El Rebelde", desc: "Caudillo que luchó contra las reformas borbónicas.", color: "from-red-700 to-red-900", image: "https://placehold.co/400x600/b91c1c/FFF?text=Tupac+Amaru" },
-    { id: 'c9', name: "Señor de los Milagros", title: "Cristo Moreno", desc: "El gran unificador de la fe peruana.", color: "from-purple-800 to-black", image: "https://placehold.co/400x600/581c87/FFF?text=Sr+Milagros" },
-    { id: 'c10', name: "La Mascaipacha", title: "Símbolo Imperial", desc: "La borla roja del poder incaico.", color: "from-red-500 to-red-700", image: "https://placehold.co/400x600/ef4444/FFF?text=Mascaipacha" },
-    { id: 'c11', name: "Sol de Echenique", title: "Sol de Justicia", desc: "Símbolo precolombino de poder y divinidad.", color: "from-yellow-400 to-yellow-600", image: "https://placehold.co/400x600/facc15/000?text=Sol+Echenique" },
-    { id: 'c12', name: "Catedral de Cusco", title: "Fe de Piedra", desc: "Síntesis arquitectónica sobre el palacio de Viracocha.", color: "from-stone-500 to-stone-700", image: "https://placehold.co/400x600/78716c/FFF?text=Catedral+Cusco" },
-    { id: 'c13', name: "Machu Picchu", title: "Joya de Piedra", desc: "Testimonio eterno de la ingeniería andina.", color: "from-green-600 to-green-800", image: "https://placehold.co/400x600/16a34a/FFF?text=Machu+Picchu" },
-    { id: 'c14', name: "Real Felipe", title: "Bastión del Pacífico", desc: "Fortaleza inexpugnable del Virreinato.", color: "from-gray-500 to-gray-700", image: "https://placehold.co/400x600/6b7280/FFF?text=Real+Felipe" },
-    { id: 'c15', name: "Virgen de la Candelaria", title: "Mamacha Puneña", desc: "Sincretismo festivo del Altiplano.", color: "from-blue-400 to-blue-600", image: "https://placehold.co/400x600/3b82f6/FFF?text=Candelaria" },
-    { id: 'c16', name: "El Quipu", title: "Memoria Anudada", desc: "Sistema de contabilidad y registro histórico.", color: "from-amber-600 to-amber-800", image: "https://placehold.co/400x600/d97706/FFF?text=Quipu" },
-    { id: 'c17', name: "Blasón Inca", title: "Heráldica Mestiza", desc: "Fusión de símbolos europeos y andinos.", color: "from-red-800 to-yellow-700", image: "https://placehold.co/400x600/9f1239/FFF?text=Blason+Inca" },
-    { id: 'c18', name: "Santa Cruz Pachacuti", title: "Cronista Indígena", desc: "Dibujó la cosmología andina en el Coricancha.", color: "from-indigo-600 to-indigo-800", image: "https://placehold.co/400x600/4f46e5/FFF?text=Sta+Cruz+Pachacuti" },
-    { id: 'c19', name: "El Mestizaje", title: "Nuestra Sangre", desc: "La fusión biológica y cultural de la nación.", color: "from-orange-600 to-red-600", image: "https://placehold.co/400x600/ea580c/FFF?text=Mestizaje" },
-    { id: 'c20', name: "Huáscar", title: "Inca Legítimo", desc: "El último eslabón de la dinastía cusqueña.", color: "from-yellow-700 to-orange-800", image: "https://placehold.co/400x600/a16207/FFF?text=Huascar" }
-  ];
-
-  const rpgScenarios = [
-    {
-      id: 1,
-      title: "La Llegada a Cusco",
-      description: "Llegas a la Ciudad Imperial en 1650. Ves una gran procesión. Un hombre te dice que es solo una imposición española para borrar el pasado.",
-      choices: [
-        { text: "Escribir que es una tiranía cultural.", correct: false, feedback: "Incorrecto. Ignoras el sincretismo y la participación voluntaria de las panacas." },
-        { text: "Observar el Corpus Christi y la presencia de caciques.", correct: true, feedback: "¡Correcto! El Corpus Christi integró a las panacas y el culto solar con la Eucaristía." }
-      ]
-    },
-    {
-      id: 2,
-      title: "El Noble Misterioso",
-      description: "Un hombre vestido con fina ropa española pero con una borla roja (mascaipacha) en la frente te saluda. ¿Quién es?",
-      choices: [
-        { text: "Un actor disfrazado.", correct: false, feedback: "No. La mascaipacha era símbolo de nobleza real reconocida." },
-        { text: "Un Inca Católico, noble reconocido por la Corona.", correct: true, feedback: "¡Exacto! Nobles como los Chihuantopa mantenían privilegios y títulos." }
-      ]
-    },
-    {
-      id: 3,
-      title: "El Arquitecto de Piedra",
-      description: "Ves una iglesia construida sobre muros incas. Un viajero extranjero dice que es un símbolo de destrucción total.",
-      choices: [
-        { text: "Asentir. Es un borrado de memoria.", correct: false, feedback: "Falso. Es el 'bautizo de la piedra', una continuidad sagrada del lugar (Huaca)." },
-        { text: "Explicar que es una superposición sagrada.", correct: true, feedback: "¡Bien! Los lugares sagrados se mantenían sagrados, cambiando el culto pero no el sitio." }
-      ]
-    },
-    {
-      id: 4,
-      title: "La Música en el Templo",
-      description: "Entras a la iglesia de Andahuaylillas y escuchas un canto polifónico. ¿En qué idioma cantan?",
-      choices: [
-        { text: "Solo en Latín, el idioma oficial.", correct: false, feedback: "Incorrecto. La iglesia fomentó las lenguas nativas." },
-        { text: "En Quechua, es el Hanacpachap Cussicuinin.", correct: true, feedback: "¡Excelente! La primera polifonía de América se escribió en Quechua." }
-      ]
-    },
-    {
-      id: 5,
-      title: "El Defensor de Indios",
-      description: "Un curaca tiene problemas con un encomendero abusivo. ¿A quién acude para defender sus tierras?",
-      choices: [
-        { text: "A la rebelión armada inmediata.", correct: false, feedback: "No necesariamente. Había canales legales." },
-        { text: "Al Protector de Indios y las Leyes de Indias.", correct: true, feedback: "¡Correcto! El sistema legal español (Derecho de Gentes) permitía a los indígenas litigar y ganar." }
-      ]
+    // --- HELPERS (variedad real) ---
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
     }
-  ];
-
-  const IconKeyMap = { "Identidad": "Crown", "Cultura": "Sun", "Social": "Users", "Espiritualidad": "Church" };
-  const ColorMap = {
-    "Identidad": "bg-red-gradient",
-    "Cultura": "bg-gold-gradient",
-    "Social": "bg-gradient-to-br from-green-800 to-green-600",
-    "Espiritualidad": "bg-gradient-to-br from-purple-900 to-purple-600"
-  };
-  const TextColorMap = {
-    "Identidad": "text-peru-red",
-    "Cultura": "text-peru-gold",
-    "Social": "text-green-800",
-    "Espiritualidad": "text-purple-900"
-  };
-
-  function App() {
-    const [activeCategory, setActiveCategory] = useState("Identidad");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedTerm, setSelectedTerm] = useState(null);
-
-    const [favorites, setFavorites] = useState([]);
-    const [quizMode, setQuizMode] = useState(false);
-    const [quizQuestion, setQuizQuestion] = useState(null);
-    const [quizFeedback, setQuizFeedback] = useState(null);
-    const [quizStreak, setQuizStreak] = useState(0);
-
-    const [rpgMode, setRpgMode] = useState(false);
-    const [rpgStep, setRpgStep] = useState(0);
-    const [rpgStats, setRpgStats] = useState({ ink: 100, prestige: 0 });
-    const [rpgFeedback, setRpgFeedback] = useState(null);
-    const [rpgFinished, setRpgFinished] = useState(false);
-
-    const [unlockedCards, setUnlockedCards] = useState([]);
-    const [showUnlockModal, setShowUnlockModal] = useState(null);
-
-    // ✅ NUEVO: flag para avanzar el RPG sin hacer setState dentro del render
-    const [pendingAdvance, setPendingAdvance] = useState(false);
-
-    useEffect(() => {
-      const savedFavs = localStorage.getItem("peruanidad_favoritos");
-      if (savedFavs) setFavorites(JSON.parse(savedFavs));
-
-      const savedCards = localStorage.getItem("peruanidad_galeria");
-      if (savedCards) setUnlockedCards(JSON.parse(savedCards));
-    }, []);
-
-    // ✅ NUEVO: si durante render detectamos que hay que avanzar, lo hacemos aquí (safe)
-    useEffect(() => {
-      if (!pendingAdvance) return;
-      setPendingAdvance(false);
-      nextRpgStep();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pendingAdvance]);
-
-    // ✅ Mejora: toggleFavorite ya no depende de “evento falso”
-    const toggleFavorite = (eventOrNull, id) => {
-      if (eventOrNull && typeof eventOrNull.stopPropagation === "function") eventOrNull.stopPropagation();
-
-      const newFavs = favorites.includes(id)
-        ? favorites.filter(fid => fid !== id)
-        : [...favorites, id];
-
-      setFavorites(newFavs);
-      localStorage.setItem("peruanidad_favoritos", JSON.stringify(newFavs));
-    };
-
-    const unlockRandomCard = (source) => {
-      const lockedCards = galleryData.filter(card => !unlockedCards.includes(card.id));
-      if (lockedCards.length === 0) return;
-
-      const randomCard = lockedCards[Math.floor(Math.random() * lockedCards.length)];
-      const newUnlocked = [...unlockedCards, randomCard.id];
-
-      setUnlockedCards(newUnlocked);
-      localStorage.setItem("peruanidad_galeria", JSON.stringify(newUnlocked));
-
-      setShowUnlockModal({ ...randomCard, source });
-    };
-
-    const startQuiz = () => {
-      setQuizMode(true);
-      setRpgMode(false);
-      setActiveCategory(null);
-      setQuizFeedback(null);
-      setQuizStreak(0);
-      generateQuestion();
-    };
-
-    const generateQuestion = () => {
-      const randomIdx = Math.floor(Math.random() * compendioData.length);
-      const correctTerm = compendioData[randomIdx];
-      let wrongOptions = [];
-      while (wrongOptions.length < 2) {
-        const idx = Math.floor(Math.random() * compendioData.length);
-        if (idx !== randomIdx && !wrongOptions.includes(compendioData[idx])) wrongOptions.push(compendioData[idx]);
+    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+    function sampleOne(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function pickN(arr, n, avoidSet = new Set()) {
+      const pool = arr.filter(x => !avoidSet.has(x));
+      return shuffleArray(pool).slice(0, Math.min(n, pool.length));
+    }
+    function weightedChoice(items) {
+      const total = items.reduce((s, it) => s + it.weight, 0);
+      let r = Math.random() * total;
+      for (const it of items) {
+        r -= it.weight;
+        if (r <= 0) return it.value;
       }
-      setQuizQuestion({ correct: correctTerm, options: [...wrongOptions, correctTerm].sort(() => Math.random() - 0.5) });
-      setQuizFeedback(null);
+      return items[items.length - 1].value;
+    }
+    function shortDef(def, maxLen = 220) {
+      const s = (def || "").trim();
+      if (s.length <= maxLen) return s;
+      return s.slice(0, maxLen).trim() + "…";
+    }
+
+    // --- ICON COMPONENTS ---
+    const Icon = ({ path, size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        {path}
+      </svg>
+    );
+
+    const Icons = {
+      Book: <g><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></g>,
+      Sun: <g><circle cx="12" cy="12" r="4" /><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></g>,
+      Users: <g><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g>,
+      Church: <g><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M17 21v-5.5a2.5 2.5 0 0 0-5 0V21"/></g>,
+      Search: <g><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></g>,
+      X: <g><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></g>,
+      Scroll: <g><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2a2 2 0 0 0-2 2v2.5" /><path d="M15 17v5" /></g>,
+      GraduationCap: <g><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></g>,
+      Crown: <g><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" /></g>,
+      Heart: <g><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></g>,
+      Copy: <g><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g>,
+      Brain: <g><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-4.04z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-4.04z"/></g>,
+      Shuffle: <g><polyline points="16 3 21 3 21 8" /><line x1="4" y1="20" x2="21" y2="3" /><polyline points="21 16 21 21 16 21" /><line x1="15" y1="15" x2="21" y2="21" /><line x1="4" y1="4" x2="9" y2="9" /></g>,
+      Feather: <g><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" /><line x1="16" y1="8" x2="2" y2="22" /><line x1="17.5" y1="15" x2="9" y2="15" /></g>,
+      ChevronRight: <g><polyline points="9 18 15 12 9 6" /></g>,
+      Image: <g><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></g>,
+      Lock: <g><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></g>,
+      Unlock: <g><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></g>,
     };
 
-    const handleAnswer = (selected) => {
-      if (selected.id === quizQuestion.correct.id) {
-        setQuizFeedback("correct");
-        const newStreak = quizStreak + 1;
-        setQuizStreak(newStreak);
-        if (newStreak % 10 === 0) unlockRandomCard("¡Racha de 10 aciertos!");
-      } else {
-        setQuizFeedback("wrong");
+    // --- DATA ---
+    const compendioData = [
+      // I. IDENTIDAD E HISTORIA
+      { id: 1, term: "Peruanidad", category: "Identidad", definition: "Concepto de Víctor Andrés Belaunde. Define al Perú no como una suma de partes, sino como una 'síntesis viviente', una nueva entidad espiritual y biológica indivisible." },
+      { id: 2, term: "Pacto Hispano-Inca", category: "Identidad", definition: "Alianza fundacional entre la Corona de Castilla y las Panacas del Cusco, permitiendo la transición legal del Tahuantinsuyo al Virreinato." },
+      { id: 3, term: "Incas Católicos", category: "Identidad", definition: "Nobleza incaica que adoptó el cristianismo, conservó privilegios y actuó como vehículo de evangelización (ej. Cristóbal Paullu Inca)." },
+      { id: 4, term: "Praeparatio Evangelica", category: "Identidad", definition: "Teoría que sostiene que el Incanato fue una preparación providencial, con su moral y orden, para la recepción del Evangelio." },
+      { id: 5, term: "Semillas del Verbo", category: "Identidad", definition: "Concepto patrístico: la verdad divina ya estaba dispersa en la cultura andina (ej. idea de un creador) antes de la llegada de los misioneros." },
+      { id: 6, term: "Mestizaje", category: "Identidad", definition: "La sustancia de la nación. Fusión biológica y cultural que trasciende la raza para convertirse en una categoría espiritual de unidad." },
+      { id: 7, term: "Pachayachachic", category: "Identidad", definition: "Atributo de Viracocha entendido como 'Ordenador del Mundo'. Identificado con el Dios Creador cristiano para facilitar la conversión." },
+      { id: 8, term: "Sol de Justicia", category: "Identidad", definition: "Proceso de sustitución simbólica donde el culto al sol físico (Inti) fue redirigido hacia Cristo, el 'Sol de Justicia'." },
+      { id: 9, term: "Panaca Real", category: "Identidad", definition: "Estructura de linaje incaica que la Iglesia respetó y reconoció legalmente durante tres siglos." },
+      { id: 10, term: "Cédula de Honores", category: "Identidad", definition: "Decreto de Carlos V que reconocía a los nobles incas como 'Grandes de España', con estatus superior al plebeyo español." },
+      { id: 11, term: "Reinos del Perú", category: "Identidad", definition: "Definición jurídica del estatus político del Perú bajo la monarquía hispánica; un Reino con igualdad jurídica, no una colonia." },
+      { id: 12, term: "Quechua Pastoral", category: "Identidad", definition: "Versión estandarizada del quechua, desarrollada por la Iglesia (Concilios Limenses) para la evangelización y la alta cultura." },
+      { id: 13, term: "Inca Garcilaso de la Vega", category: "Identidad", definition: "El arquetipo del peruano. Primer mestizo biológico y espiritual que reconcilió sus dos herencias en los 'Comentarios Reales'." },
+      { id: 14, term: "Blasón Indígena", category: "Identidad", definition: "Heráldica otorgada a los nobles incas, combinando simbología europea (yelmos) con andina (mascaipacha, serpientes)." },
+      { id: 15, term: "Leyenda Negra", category: "Identidad", definition: "Narrativa propagandística que busca fracturar la identidad peruana presentando la historia solo como víctimas y victimarios." },
+      { id: 61, term: "Perú", category: "Identidad", definition: "Nombre que no es quechua ni español, nacido del mestizaje. Representa la nueva realidad histórica que trasciende al Tahuantinsuyo." },
+      { id: 62, term: "Gran Perú", category: "Identidad", definition: "El territorio histórico que abarcó casi toda Sudamérica bajo el Virreinato, centro irradiador de civilización desde Panamá hasta Tierra del Fuego." },
+      { id: 63, term: "Monarquía Peruana", category: "Identidad", definition: "Tradición de gobierno natural de los Andes, iniciada con los Incas y continuada con los Reyes de España, basada en la lealtad y el pacto." },
+      { id: 64, term: "Estado Peruano", category: "Identidad", definition: "La estructura jurídica y política moderna, que muchas veces entró en conflicto con la nación histórica al ignorar a las comunidades y panacas." },
+      { id: 65, term: "Patria Peruana", category: "Identidad", definition: "Del latín 'Pater'. La tierra de los padres. Implica amar la herencia recibida tanto de la raíz andina como de la hispana." },
+      { id: 66, term: "Nación Peruana", category: "Identidad", definition: "La comunidad de personas unidas por el mestizaje, la fe y la historia común, más allá de las divisiones raciales o de clase." },
+      { id: 67, term: "Imperio Peruano", category: "Identidad", definition: "Concepto geopolítico. El Perú nació con vocación imperial (Inca y Virreinal) para integrar el continente, no para ser una república aislada." },
+      { id: 68, term: "Virreinato", category: "Identidad", definition: "No fue una colonia, sino un Reino integrante de la Monarquía Hispánica, con sus propias cortes, nobleza, moneda y administración." },
+      { id: 69, term: "Casa Habsburgo", category: "Identidad", definition: "Dinastía (Austrias) que gobernó durante el auge del pacto Hispano-Inca, respetando la autonomía de los fueros indígenas y la nobleza local." },
+      { id: 70, term: "Casa Borbón", category: "Identidad", definition: "Dinastía reformista (s. XVIII) que centralizó el poder, rompió pactos con los caciques y expulsó a los jesuitas, detonando rebeliones." },
+      { id: 71, term: "Liberalismo", category: "Identidad", definition: "Ideología importada que, al fundar la República, rompió la estructura comunitaria andina y la protección de las tierras indígenas." },
+      { id: 72, term: "Monarquismo", category: "Identidad", definition: "Corriente política (San Martín, Túpac Amaru) que entendía que el Perú, por su historia, funcionaba mejor bajo una figura de autoridad tradicional." },
+
+      // II. CULTURA Y CELEBRACIÓN
+      { id: 16, term: "Barroco Andino", category: "Cultura", definition: "Estilo artístico de fusión. Caracterizado por la saturación decorativa y el uso de flora/fauna local en templos cristianos." },
+      { id: 17, term: "Corpus Christi Cusqueño", category: "Cultura", definition: "La 'Fiesta Nacional' surandina. Procesión eucarística que integró la estructura de las Panacas y Ayllus en el culto católico." },
+      { id: 18, term: "Escuela Cusqueña", category: "Cultura", definition: "Movimiento pictórico indígena/mestizo. Libertad estética y uso del 'brocateado' (pan de oro sobre las telas)." },
+      { id: 19, term: "Sincretismo Virtuoso", category: "Cultura", definition: "Estrategia de 'bautizar' costumbres locales en lugar de eliminarlas, dándoles un nuevo significado cristiano." },
+      { id: 20, term: "Ángel Arcabucero", category: "Cultura", definition: "Iconografía única: ángeles vestidos como nobles españoles armados con arcabuces, asociados con el rayo (Illapa)." },
+      { id: 21, term: "Hanacpachap Cussicuinin", category: "Cultura", definition: "'La Alegría del Cielo'. Primera obra polifónica compuesta en América (1631), escrita en quechua." },
+      { id: 22, term: "Niño Manuelito", category: "Cultura", definition: "Representación andina del Niño Jesús, a menudo vestido como Inca, simbolizando cercanía con el sufrimiento indígena." },
+      { id: 23, term: "Retablo Ayacuchano", category: "Cultura", definition: "Evolución del 'Cajón de San Marcos'. Máxima expresión del sincretismo narrativo popular y evangelización portátil." },
+      { id: 24, term: "Mascaipacha Eclesiástica", category: "Cultura", definition: "Fenómeno visual donde el símbolo de poder inca (borla roja) corona figuras cristianas o alféreces reales en el arte." },
+      { id: 25, term: "Santurantikuy", category: "Cultura", definition: "'Venta de Santos'. Feria tradicional cusqueña que demuestra la economía y artesanía generada alrededor de la fe." },
+      { id: 26, term: "La Procesión", category: "Cultura", definition: "Formato de culto público por excelencia. Reemplazó desplazamientos de momias, permitiendo 'caminar con Dios'." },
+      { id: 27, term: "Arquitectura Misional", category: "Cultura", definition: "Estilo de construcción (adobe, quincha) adaptado a la geografía, centro de la vida urbana en selva y sierra." },
+      { id: 28, term: "Huacas Cristianizadas", category: "Cultura", definition: "Lugares sagrados prehispánicos marcados con cruces para consagrar el espacio geográfico a la nueva fe." },
+      { id: 29, term: "Danzas de Moros y Cristianos", category: "Cultura", definition: "Adaptadas como danzas de 'Incas y Españoles' o 'Ángeles y Demonios', ritualizando la historia." },
+      { id: 30, term: "Teología Visual", category: "Cultura", definition: "Uso del arte mural y escultórico como medio didáctico principal en una sociedad visualmente sofisticada." },
+      { id: 73, term: "Capac Cuna", category: "Cultura", definition: "La lista oficial de los gobernantes incas. En el virreinato, esta lista se extendió para incluir a los Reyes de España como sucesores legítimos." },
+      { id: 74, term: "Mascaipacha", category: "Cultura", definition: "La borla imperial roja, símbolo máximo del poder inca. Fue reconocida y usada por los nobles incas en ceremonias católicas virreinales." },
+      { id: 75, term: "Quipu", category: "Cultura", definition: "Sistema de cuerdas y nudos para contabilidad y registro. Se siguió usando en la administración virreinal temprana como herramienta de orden." },
+      { id: 76, term: "Quechua", category: "Cultura", definition: "Lengua General (Runa Simi). La Iglesia la sistematizó y expandió más que los propios Incas, usándola para la evangelización y la cultura." },
+      { id: 77, term: "Pukina", category: "Cultura", definition: "La 'lengua secreta' de la nobleza incaica, distinta al quechua. Su rastro se encuentra en el portal pentalingüe de Andahuaylillas." },
+      { id: 78, term: "Cápac Unáncha", category: "Cultura", definition: "El estandarte real. Símbolo de soberanía que el Alférez Real (descendiente inca) portaba en las procesiones junto a la Mascaipacha." },
+      { id: 79, term: "Punchaw", category: "Cultura", definition: "El ídolo del Sol del día. Estatua de oro que contenía las cenizas de los corazones de los incas, reemplazada teológicamente por la Custodia." },
+      { id: 80, term: "Tupayauri", category: "Cultura", definition: "El cetro de oro de Manco Cápac. Símbolo de poder fundacional que se fusionó con los bastones de mando de las autoridades virreinales." },
+      { id: 81, term: "Blasón de la Conquista", category: "Cultura", definition: "Escudos de armas otorgados a ciudades y nobles indígenas, mezclando heráldica europea (leones, castillos) con andina (jaguares, serpientes)." },
+
+      // III. VIDA SOCIAL Y ÉTICA
+      { id: 31, term: "Derecho de Gentes", category: "Social", definition: "Base filosófica (Escuela de Salamanca) que estableció la humanidad y derechos naturales de los indígenas." },
+      { id: 32, term: "Leyes de Indias", category: "Social", definition: "Cuerpo legislativo de la Corona para proteger al indígena de abusos, garantizando tierras comunales." },
+      { id: 33, term: "Protectoría de Indios", category: "Social", definition: "Institución virreinal encargada de representar legalmente a los indígenas, como una 'Defensoría del Pueblo'." },
+      { id: 34, term: "Curaca (Cacique)", category: "Social", definition: "Autoridad indígena bisagra. Mantenía el orden local y enlazaba el mundo andino con el aparato virreinal." },
+      { id: 35, term: "Varayoc", category: "Social", definition: "Sistema de autoridad comunal indígena (alcaldes de indios) instituido en el Virreinato, vigente hasta hoy." },
+      { id: 36, term: "Ayllu", category: "Social", definition: "Célula social andina basada en el parentesco. La Iglesia la preservó al convertirla en base parroquial rural." },
+      { id: 37, term: "Cofradía", category: "Social", definition: "Asociación laica de fieles. Funcionaba como banco, seguro de salud y centro festivo, reemplazando funciones del Ayllu." },
+      { id: 38, term: "Ayni y Minka", category: "Social", definition: "Sistemas de reciprocidad y trabajo comunal andino integrados en la construcción de obras públicas virreinales." },
+      { id: 39, term: "Hospitales de Naturales", category: "Social", definition: "Red de salud pionera fundada por la Iglesia (ej. Hospital de Santa Ana) para atención diferenciada indígena." },
+      { id: 40, term: "Doctrina", category: "Social", definition: "Pueblo de indios organizado por la Iglesia. Centro de civilización técnica, agrícola y educativa." },
+      { id: 41, term: "Universidad de San Marcos", category: "Social", definition: "Fundada en 1551. Foco intelectual donde se educó la élite y se estableció la cátedra de Quechua." },
+      { id: 42, term: "Colegio de Caciques", category: "Social", definition: "Instituciones (como San Francisco de Borja) para educar a la nobleza indígena, creando una élite inca-hispana." },
+      { id: 43, term: "Mita Virreinal", category: "Social", definition: "Adaptación del trabajo rotativo incaico. Base económica regulada legalmente, distinta a la esclavitud chattel." },
+      { id: 44, term: "Cabildo de Indios", category: "Social", definition: "Órgano de gobierno municipal exclusivo para las repúblicas de indios, permitiendo autogobierno local." },
+      { id: 45, term: "Resguardo Indígena", category: "Social", definition: "Tierras comunales protegidas por título real, inalienables, base de las comunidades campesinas actuales." },
+      { id: 82, term: "Francisco Pizarro", category: "Social", definition: "Conquistador y fundador. Estableció la alianza con las panacas huascaristas contra Atahualpa, dando inicio al Perú mestizo." },
+      { id: 83, term: "Pachacútec", category: "Social", definition: "El gran organizador del Tahuantinsuyo. Su búsqueda del dios ordenador (Pachayachachic) preparó filosóficamente a los Andes para el monoteísmo." },
+      { id: 84, term: "Atahualpa", category: "Social", definition: "Considerado usurpador y tirano por las panacas cusqueñas. Su ejecución fue vista por muchos nobles incas como justicia divina." },
+      { id: 85, term: "Huascar", category: "Social", definition: "Inca legítimo del Cusco. Su asesinato por las tropas de Atahualpa motivó a su familia a aliarse con Pizarro." },
+      { id: 86, term: "Orden Jesuita", category: "Social", definition: "La 'Compañía de Jesús'. Educadores de la nobleza inca y arquitectos de la cultura barroca. Su símbolo (sol) resonó con la mística andina." },
+      { id: 87, term: "Lima", category: "Social", definition: "Ciudad de los Reyes. Centro político y administrativo del Virreinato, donde convivían todas las castas del imperio." },
+      { id: 88, term: "Cuzco", category: "Social", definition: "La 'Roma de América'. Centro histórico y espiritual donde se mantuvo la nobleza incaica con sus fueros y tradiciones." },
+      { id: 89, term: "Real Felipe", category: "Social", definition: "Fortaleza del Callao. Símbolo del poder militar y defensa del Virreinato frente a piratas y potencias enemigas." },
+      { id: 90, term: "Beatriz Clara Coya", category: "Social", definition: "Princesa inca, heredera de Sayri Túpac. Su matrimonio con Martín García de Loyola simboliza la unión de sangres y coronas." },
+      { id: 91, term: "Martín García de Loyola", category: "Social", definition: "Capitán español, sobrino de San Ignacio. Al casarse con la Ñusta Beatriz, selló la alianza estratégica entre la Corona y los Incas." },
+      { id: 92, term: "Vicente Chimor", category: "Social", definition: "Cacique de la costa norte que reclamó al Rey sus derechos nobiliarios, demostrando la capacidad legal de la nobleza indígena." },
+
+      // IV. ESPIRITUALIDAD Y SÍMBOLOS
+      { id: 46, term: "Señor de los Milagros", category: "Espiritualidad", definition: "El 'Cristo de la Unidad'. Integró el componente afroperuano, indígena y criollo bajo el color morado." },
+      { id: 47, term: "Taytacha Temblores", category: "Espiritualidad", definition: "El 'Cristo Moreno' del Cusco. Su color oscuro valida la tez mestiza y fusiona sufrimiento andino y cristiano." },
+      { id: 48, term: "Santa Rosa de Lima", category: "Espiritualidad", definition: "Primera Santa de América. Símbolo de que la tierra peruana era fértil para la santidad universal." },
+      { id: 49, term: "San Martín de Porres", category: "Espiritualidad", definition: "Santo de la escoba. Representa la dignidad de los oficios humildes y la superación de barreras raciales." },
+      { id: 50, term: "Virgen de la Candelaria", category: "Espiritualidad", definition: "Máxima expresión de fe del Altiplano. Fusiona el culto a la Pachamama con la Virgen María." },
+      { id: 51, term: "Cruz de Motupe", category: "Espiritualidad", definition: "Devoción de 'hallazgo'. La cruz en el cerro (Apu) que sacraliza la geografía norteña." },
+      { id: 52, term: "Santidad Mestiza", category: "Espiritualidad", definition: "Reconocimiento de que la santidad no es europea. Incluye figuras como el indio Nicolás de Ayllón." },
+      { id: 53, term: "Beatitas", category: "Espiritualidad", definition: "Mujeres laicas consagradas que sostenían la caridad y la oración en las ciudades sin estar en conventos." },
+      { id: 54, term: "Apus Tutelares", category: "Espiritualidad", definition: "Visión Católica: respeto a la naturaleza no como dios, sino como creación, permitiendo subsistir el respeto cultural." },
+      { id: 55, term: "La Dolorosa", category: "Espiritualidad", definition: "Advocación mariana preferida en el Perú, resonando con el sentimiento trágico de la cosmovisión andina." },
+      { id: 56, term: "Exvotos", category: "Espiritualidad", definition: "Pequeñas ofrendas (milagros) que demuestran la relación tangible y de agradecimiento con lo divino." },
+      { id: 57, term: "Sarita Colonia", category: "Espiritualidad", definition: "Culto popular. Representa la necesidad del migrante y marginado de encontrar protección espiritual." },
+      { id: 58, term: "Vocación Imperial", category: "Espiritualidad", definition: "Conciencia histórica de que el Perú fue centro irradiador de fe y cultura para toda Sudamérica." },
+      { id: 59, term: "Tierra de Santos", category: "Espiritualidad", definition: "Título dado al Perú por la inusual concentración de santos contemporáneos en el siglo XVII." },
+      { id: 60, term: "Firme y Feliz por la Unión", category: "Espiritualidad", definition: "Lema nacional que resume el objetivo: la peruanidad solo es viable a través de la unión de sus herencias." },
+      { id: 93, term: "Promesa del Sol", category: "Espiritualidad", definition: "Mito fundacional donde el Sol promete a Pachacútec un imperio eterno. Prefigura la llegada del 'Verdadero Sol' (Cristo) que da sentido a la historia." },
+      { id: 94, term: "Wiracocha", category: "Espiritualidad", definition: "El Dios hacedor. Concepto andino del creador supremo que facilitó la comprensión y aceptación del Dios cristiano." },
+      { id: 95, term: "Jesucristo", category: "Espiritualidad", definition: "El 'Sol de Justicia' y 'Luz del Mundo'. Su figura completó y perfeccionó la adoración solar incaica sin contradecirla." },
+      { id: 96, term: "Santo Toribio de Mogrovejo", category: "Espiritualidad", definition: "Arzobispo de Lima y patrono del episcopado latinoamericano. Defensor de los indios, aprendió quechua para evangelizar corazón a corazón." },
+      { id: 97, term: "Pachacamaca", category: "Espiritualidad", definition: "'El que anima al mundo'. Término que Garcilaso de la Vega reivindica para referirse al Dios cristiano en lengua quechua." },
+      { id: 98, term: "Incarri", category: "Espiritualidad", definition: "Mito mesiánico andino sobre el regreso del Inca para restaurar el orden. Refleja la esperanza de restauración y justicia." },
+      { id: 99, term: "San Francisco de Borja", category: "Espiritualidad", definition: "Santo jesuita de sangre real (Gandía). Patrón de la nobleza indígena, modelo de santidad para los colegios de caciques." },
+      { id: 100, term: "La Cruz de la Conquista", category: "Espiritualidad", definition: "Símbolo fundacional traído por los dominicos (Vicente de Valverde), marcando el inicio de la nueva era espiritual del Perú." }
+    ];
+
+    // --- COLLECTABLE CARDS DATA (20 items) ---
+    const galleryData = [
+      { id: 'c1', name: "Pachacútec", title: "El Organizador", desc: "El gran transformador del mundo andino.", image: "https://placehold.co/400x600/b45309/FFF?text=Pachacutec" },
+      { id: 'c2', name: "Atahualpa", title: "El Último Soberano", desc: "Figura trágica del encuentro de dos mundos.", image: "https://placehold.co/400x600/991b1b/FFF?text=Atahualpa" },
+      { id: 'c3', name: "Francisco Pizarro", title: "El Fundador", desc: "Marqués gobernador que inició el mestizaje.", image: "https://placehold.co/400x600/4b5563/FFF?text=Pizarro" },
+      { id: 'c4', name: "Isabel la Católica", title: "Reina Protectora", desc: "Iniciadora de los derechos de los indígenas.", image: "https://placehold.co/400x600/1e40af/FFF?text=Isabel" },
+      { id: 'c5', name: "Inca Garcilaso", title: "Primer Mestizo", desc: "La pluma que unió los Andes con España.", image: "https://placehold.co/400x600/6b21a8/FFF?text=Garcilaso" },
+      { id: 'c6', name: "Santa Rosa", title: "Patrona de América", desc: "Mística limeña que elevó al Perú a los altares.", image: "https://placehold.co/400x600/9d174d/FFF?text=Santa+Rosa" },
+      { id: 'c7', name: "San Martín de Porres", title: "Santo de la Escoba", desc: "Símbolo de humildad y unión de razas.", image: "https://placehold.co/400x600/44403c/FFF?text=San+Martin" },
+      { id: 'c8', name: "Túpac Amaru II", title: "El Rebelde", desc: "Caudillo que luchó contra las reformas borbónicas.", image: "https://placehold.co/400x600/b91c1c/FFF?text=Tupac+Amaru" },
+      { id: 'c9', name: "Señor de los Milagros", title: "Cristo Moreno", desc: "El gran unificador de la fe peruana.", image: "https://placehold.co/400x600/581c87/FFF?text=Sr+Milagros" },
+      { id: 'c10', name: "La Mascaipacha", title: "Símbolo Imperial", desc: "La borla roja del poder incaico.", image: "https://placehold.co/400x600/ef4444/FFF?text=Mascaipacha" },
+      { id: 'c11', name: "Sol de Echenique", title: "Sol de Justicia", desc: "Símbolo precolombino de poder y divinidad.", image: "https://placehold.co/400x600/facc15/000?text=Sol+Echenique" },
+      { id: 'c12', name: "Catedral de Cusco", title: "Fe de Piedra", desc: "Síntesis arquitectónica sobre el palacio de Viracocha.", image: "https://placehold.co/400x600/78716c/FFF?text=Catedral+Cusco" },
+      { id: 'c13', name: "Machu Picchu", title: "Joya de Piedra", desc: "Testimonio eterno de la ingeniería andina.", image: "https://placehold.co/400x600/16a34a/FFF?text=Machu+Picchu" },
+      { id: 'c14', name: "Real Felipe", title: "Bastión del Pacífico", desc: "Fortaleza inexpugnable del Virreinato.", image: "https://placehold.co/400x600/6b7280/FFF?text=Real+Felipe" },
+      { id: 'c15', name: "Virgen de la Candelaria", title: "Mamacha Puneña", desc: "Sincretismo festivo del Altiplano.", image: "https://placehold.co/400x600/3b82f6/FFF?text=Candelaria" },
+      { id: 'c16', name: "El Quipu", title: "Memoria Anudada", desc: "Sistema de contabilidad y registro histórico.", image: "https://placehold.co/400x600/d97706/FFF?text=Quipu" },
+      { id: 'c17', name: "Blasón Inca", title: "Heráldica Mestiza", desc: "Fusión de símbolos europeos y andinos.", image: "https://placehold.co/400x600/9f1239/FFF?text=Blason+Inca" },
+      { id: 'c18', name: "Santa Cruz Pachacuti", title: "Cronista Indígena", desc: "Dibujó la cosmología andina en el Coricancha.", image: "https://placehold.co/400x600/4f46e5/FFF?text=Sta+Cruz+Pachacuti" },
+      { id: 'c19', name: "El Mestizaje", title: "Nuestra Sangre", desc: "La fusión biológica y cultural de la nación.", image: "https://placehold.co/400x600/ea580c/FFF?text=Mestizaje" },
+      { id: 'c20', name: "Huáscar", title: "Inca Legítimo", desc: "El último eslabón de la dinastía cusqueña.", image: "https://placehold.co/400x600/a16207/FFF?text=Huascar" }
+    ];
+
+    // --- MAPPINGS ---
+    const IconKeyMap = { "Identidad": "Crown", "Cultura": "Sun", "Social": "Users", "Espiritualidad": "Church" };
+    const ColorMap = {
+      "Identidad": "bg-red-gradient",
+      "Cultura": "bg-gold-gradient",
+      "Social": "bg-gradient-to-br from-green-800 to-green-600",
+      "Espiritualidad": "bg-gradient-to-br from-purple-900 to-purple-600"
+    };
+    const TextColorMap = {
+      "Identidad": "text-peru-red",
+      "Cultura": "text-peru-gold",
+      "Social": "text-green-800",
+      "Espiritualidad": "text-purple-900"
+    };
+
+    function App() {
+      const [activeCategory, setActiveCategory] = useState("Identidad");
+      const [searchTerm, setSearchTerm] = useState("");
+      const [selectedTerm, setSelectedTerm] = useState(null);
+
+      // Favorites
+      const [favorites, setFavorites] = useState([]);
+
+      // Gallery
+      const [unlockedCards, setUnlockedCards] = useState([]);
+      const [showUnlockModal, setShowUnlockModal] = useState(null);
+
+      // --- QUIZ STATE (mejorado) ---
+      const [quizMode, setQuizMode] = useState(false);
+      const [quizQuestion, setQuizQuestion] = useState(null);
+      const [quizFeedback, setQuizFeedback] = useState(null);
+      const [quizStreak, setQuizStreak] = useState(0);
+      const [quizDeck, setQuizDeck] = useState([]);
+      const [quizIndex, setQuizIndex] = useState(0);
+
+      const QUIZ_OPTIONS_MIN = 3;
+      const QUIZ_OPTIONS_MAX = 6;
+
+      // --- RPG STATE (mejorado) ---
+      const [rpgMode, setRpgMode] = useState(false);
+      const [rpgDeck, setRpgDeck] = useState([]);
+      const [rpgIndex, setRpgIndex] = useState(0);
+      const [rpgStats, setRpgStats] = useState({ ink: 100, prestige: 0 });
+      const [rpgFeedback, setRpgFeedback] = useState(null);
+      const [rpgFinished, setRpgFinished] = useState(false);
+
+      const RPG_ROUNDS = 12; // misiones por partida (sube si quieres)
+
+      useEffect(() => {
+        const savedFavs = localStorage.getItem("peruanidad_favoritos");
+        if (savedFavs) setFavorites(JSON.parse(savedFavs));
+
+        const savedCards = localStorage.getItem("peruanidad_galeria");
+        if (savedCards) setUnlockedCards(JSON.parse(savedCards));
+      }, []);
+
+      const toggleFavorite = (e, id) => {
+        e.stopPropagation();
+        let newFavs = favorites.includes(id)
+          ? favorites.filter(fid => fid !== id)
+          : [...favorites, id];
+        setFavorites(newFavs);
+        localStorage.setItem("peruanidad_favoritos", JSON.stringify(newFavs));
+      };
+
+      // --- CARD UNLOCK SYSTEM ---
+      const unlockRandomCard = (source) => {
+        const lockedCards = galleryData.filter(card => !unlockedCards.includes(card.id));
+        if (lockedCards.length === 0) return;
+        const randomCard = lockedCards[Math.floor(Math.random() * lockedCards.length)];
+        const newUnlocked = [...unlockedCards, randomCard.id];
+        setUnlockedCards(newUnlocked);
+        localStorage.setItem("peruanidad_galeria", JSON.stringify(newUnlocked));
+        setShowUnlockModal({ ...randomCard, source });
+      };
+
+      // --- QUIZ LOGIC (variedad real) ---
+      const startQuiz = () => {
+        setQuizMode(true);
+        setRpgMode(false);
+        setActiveCategory(null);
+        setQuizFeedback(null);
         setQuizStreak(0);
-      }
-    };
+        setQuizQuestion(null);
 
-    const startRpg = () => {
-      setRpgMode(true);
-      setQuizMode(false);
-      setActiveCategory(null);
-      setRpgStep(0);
-      setRpgStats({ ink: 100, prestige: 0 });
-      setRpgFeedback(null);
-      setRpgFinished(false);
-      setPendingAdvance(false);
-    };
+        const deck = shuffleArray(compendioData.map(x => x.id));
+        setQuizDeck(deck);
+        setQuizIndex(0);
+      };
 
-    const handleRpgChoice = (choice) => {
-      if (choice.correct) {
-        setRpgStats(prev => ({ ...prev, prestige: prev.prestige + 20 }));
-        setRpgFeedback({ type: 'success', text: choice.feedback });
-      } else {
-        setRpgStats(prev => ({ ...prev, ink: prev.ink - 25 }));
-        setRpgFeedback({ type: 'error', text: choice.feedback });
-      }
-    };
+      const buildQuizQuestion = (streak) => {
+        const optionsCount = clamp(QUIZ_OPTIONS_MIN + Math.floor(streak / 5), QUIZ_OPTIONS_MIN, QUIZ_OPTIONS_MAX);
 
-    const nextRpgStep = () => {
-      if (rpgStats.ink <= 0) {
-        setRpgFinished(true);
-        return;
-      }
-      if (rpgStep < rpgScenarios.length) {
-        setRpgStep(prev => prev + 1);
+        const qType = weightedChoice([
+          { value: "DEF_TO_TERM", weight: 45 },
+          { value: "TERM_TO_CATEGORY", weight: 20 },
+          { value: "CATEGORY_TO_TERM", weight: 20 },
+          { value: "NOT_BELONGS", weight: streak >= 5 ? 15 : 5 },
+        ]);
+
+        const correctId = quizDeck[quizIndex];
+        const correct = compendioData.find(x => x.id === correctId) || sampleOne(compendioData);
+
+        const sameCategoryPool = compendioData.filter(x => x.category === correct.category && x.id !== correct.id);
+        const differentCategoryPool = compendioData.filter(x => x.category !== correct.category);
+
+        const distractorPool = (sameCategoryPool.length >= (optionsCount - 1))
+          ? sameCategoryPool
+          : compendioData.filter(x => x.id !== correct.id);
+
+        const wrongTerms = pickN(distractorPool, optionsCount - 1, new Set([correct.id]));
+
+        if (qType === "DEF_TO_TERM") {
+          return {
+            type: qType,
+            promptTitle: "¿A qué término corresponde?",
+            promptBody: correct.definition,
+            correct,
+            options: shuffleArray([...wrongTerms, correct]),
+            answerKey: correct.id
+          };
+        }
+
+        if (qType === "TERM_TO_CATEGORY") {
+          const categories = ["Identidad", "Cultura", "Social", "Espiritualidad"];
+          const wrongCats = categories.filter(c => c !== correct.category);
+          const catOptions = shuffleArray([correct.category, ...pickN(wrongCats, 2)]);
+          return {
+            type: qType,
+            promptTitle: "¿A qué categoría pertenece este término?",
+            promptBody: correct.term,
+            correct,
+            options: catOptions.map((c, i) => ({ id: `cat-${i}-${c}`, label: c })),
+            answerKey: correct.category
+          };
+        }
+
+        if (qType === "CATEGORY_TO_TERM") {
+          const pool = compendioData.filter(x => x.category === correct.category);
+          const wrong = pickN(pool, optionsCount - 1, new Set([correct.id]));
+          return {
+            type: qType,
+            promptTitle: "Elige el término que pertenece a esta categoría",
+            promptBody: correct.category,
+            correct,
+            options: shuffleArray([...wrong, correct]),
+            answerKey: correct.id
+          };
+        }
+
+        if (qType === "NOT_BELONGS") {
+          const baseCategory = correct.category;
+          const basePool = compendioData.filter(x => x.category === baseCategory);
+          const baseTerms = pickN(basePool, Math.max(2, optionsCount - 1), new Set());
+          const intruder = sampleOne(differentCategoryPool);
+          const opts = shuffleArray([...baseTerms, intruder]).slice(0, optionsCount);
+          return {
+            type: qType,
+            promptTitle: "¿Cuál NO pertenece a la misma categoría?",
+            promptBody: `Categoría base: ${baseCategory}`,
+            correct: intruder,
+            options: opts,
+            answerKey: intruder.id,
+            meta: { baseCategory }
+          };
+        }
+
+        return {
+          type: "DEF_TO_TERM",
+          promptTitle: "¿A qué término corresponde?",
+          promptBody: correct.definition,
+          correct,
+          options: shuffleArray([...wrongTerms, correct]),
+          answerKey: correct.id
+        };
+      };
+
+      const generateQuestion = () => {
+        if (!quizDeck.length) return;
+
+        if (quizIndex >= quizDeck.length) {
+          const newDeck = shuffleArray(compendioData.map(x => x.id));
+          setQuizDeck(newDeck);
+          setQuizIndex(0);
+          setQuizQuestion(null);
+          setQuizFeedback(null);
+          return;
+        }
+
+        setQuizQuestion(buildQuizQuestion(quizStreak));
+        setQuizFeedback(null);
+      };
+
+      const handleAnswer = (selected) => {
+        if (!quizQuestion) return;
+
+        let isCorrect = false;
+        if (quizQuestion.type === "TERM_TO_CATEGORY") {
+          isCorrect = selected.label === quizQuestion.answerKey;
+        } else {
+          isCorrect = selected.id === quizQuestion.answerKey;
+        }
+
+        if (isCorrect) {
+          setQuizFeedback("correct");
+          const newStreak = quizStreak + 1;
+          setQuizStreak(newStreak);
+          if (newStreak % 10 === 0) unlockRandomCard("¡Racha de 10 aciertos!");
+        } else {
+          setQuizFeedback("wrong");
+          setQuizStreak(0);
+        }
+
+        setQuizIndex(prev => prev + 1);
+      };
+
+      useEffect(() => {
+        if (!quizMode) return;
+        if (!quizDeck.length) return;
+        if (!quizQuestion) generateQuestion();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [quizMode, quizDeck]);
+
+      // Auto-pasar (800ms) cuando se responde
+      useEffect(() => {
+        if (!quizMode) return;
+        if (!quizFeedback) return;
+        const t = setTimeout(() => generateQuestion(), 800);
+        return () => clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [quizFeedback]);
+
+      // --- RPG (Misión del Cronista) con 3 opciones y variedad ---
+      const buildRpgScenario = (idx, difficulty, usedIdsSet) => {
+        // Elegimos un término correcto que no se repita en este deck (en lo posible)
+        const available = compendioData.filter(x => !usedIdsSet.has(x.id));
+        const correct = available.length ? sampleOne(available) : sampleOne(compendioData);
+
+        // Tipos de misión (variedad)
+        const type = weightedChoice([
+          { value: "CHRON_DEF", weight: 35 },
+          { value: "CHRON_CAT", weight: 25 },
+          { value: "CHRON_INTRUDER", weight: difficulty >= 2 ? 20 : 10 },
+          { value: "CHRON_TERM_TO_DEF", weight: 20 }
+        ]);
+
+        // Pools
+        const sameCat = compendioData.filter(x => x.category === correct.category && x.id !== correct.id);
+        const diffCat = compendioData.filter(x => x.category !== correct.category);
+
+        // Más difícil => distractores más parecidos (misma categoría)
+        const preferSameCat = difficulty >= 2;
+
+        const chooseWrongTerms = () => {
+          let pool = preferSameCat && sameCat.length >= 2 ? sameCat : compendioData.filter(x => x.id !== correct.id);
+          const wrong = pickN(pool, 2, new Set([correct.id]));
+          // fallback si faltan
+          while (wrong.length < 2) {
+            const extra = sampleOne(compendioData.filter(x => x.id !== correct.id && !wrong.some(w => w.id === x.id)));
+            wrong.push(extra);
+          }
+          return wrong;
+        };
+
+        // Construcción por tipo
+        if (type === "CHRON_DEF") {
+          const wrong = chooseWrongTerms();
+          const options = shuffleArray([
+            { text: correct.term, correct: true, feedback: `Bien. "${correct.term}" encaja con la definición y su contexto.` },
+            { text: wrong[0].term, correct: false, feedback: `No. "${wrong[0].term}" pertenece a otra idea: ${wrong[0].category}.` },
+            { text: wrong[1].term, correct: false, feedback: `Incorrecto. "${wrong[1].term}" no describe este caso.` },
+          ]);
+
+          return {
+            id: `rpg-${idx}-${type}-${correct.id}`,
+            title: "Archivo del Cronista",
+            description: `Encuentras un pergamino con esta nota:\n\n“${shortDef(correct.definition)}”\n\n¿Qué término debe registrar el cronista?`,
+            choices: options
+          };
+        }
+
+        if (type === "CHRON_TERM_TO_DEF") {
+          const wrong = chooseWrongTerms();
+          // Opciones: 1 definición correcta y 2 definiciones distractoras (mismo estilo)
+          const options = shuffleArray([
+            { text: shortDef(correct.definition, 160), correct: true, feedback: `Exacto. Esa es la idea central de "${correct.term}".` },
+            { text: shortDef(wrong[0].definition, 160), correct: false, feedback: `No corresponde. Eso describe más bien "${wrong[0].term}".` },
+            { text: shortDef(wrong[1].definition, 160), correct: false, feedback: `Incorrecto. Esa definición pertenece a "${wrong[1].term}".` },
+          ]);
+
+          return {
+            id: `rpg-${idx}-${type}-${correct.id}`,
+            title: "Glosa para el Registro",
+            description: `Te piden redactar la definición oficial del término:\n\n“${correct.term}”\n\n¿Cuál definición eliges para el registro?`,
+            choices: options
+          };
+        }
+
+        if (type === "CHRON_CAT") {
+          const categories = ["Identidad", "Cultura", "Social", "Espiritualidad"];
+          const wrongCats = categories.filter(c => c !== correct.category);
+          const wrong = pickN(wrongCats, 2);
+          const options = shuffleArray([
+            { text: correct.category, correct: true, feedback: `Correcto. "${correct.term}" pertenece a ${correct.category}.` },
+            { text: wrong[0], correct: false, feedback: `No. Revisa el enfoque: "${correct.term}" no encaja en ${wrong[0]}.` },
+            { text: wrong[1], correct: false, feedback: `Incorrecto. La categoría correcta era ${correct.category}.` },
+          ]);
+
+          return {
+            id: `rpg-${idx}-${type}-${correct.id}`,
+            title: "Clasificación del Archivo",
+            description: `Un escribano te pregunta dónde archivar el término:\n\n"${correct.term}"\n\n¿En qué categoría lo registras?`,
+            choices: options
+          };
+        }
+
+        if (type === "CHRON_INTRUDER") {
+          // Base = categoría del correcto; 2 opciones de esa categoría + 1 intruso (correcto = intruso)
+          const baseCategory = correct.category;
+          const basePool = compendioData.filter(x => x.category === baseCategory);
+          const baseTerms = pickN(basePool, 2, new Set([correct.id]));
+          const intruder = sampleOne(diffCat);
+
+          // Aquí el "correct" es el intruso (para variedad)
+          const options = shuffleArray([
+            { text: intruder.term, correct: true, feedback: `Bien visto: "${intruder.term}" no pertenece a ${baseCategory}.` },
+            { text: baseTerms[0]?.term || correct.term, correct: false, feedback: `No. Ese término sí encaja en ${baseCategory}.` },
+            { text: baseTerms[1]?.term || sampleOne(basePool).term, correct: false, feedback: `Incorrecto. Ese término también corresponde a ${baseCategory}.` },
+          ]);
+
+          return {
+            id: `rpg-${idx}-${type}-${intruder.id}`,
+            title: "Prueba de Discernimiento",
+            description: `En un legajo hay términos mezclados. El archivo base es:\n\n${baseCategory}\n\n¿Cuál término es el intruso (no pertenece)?`,
+            choices: options
+          };
+        }
+
+        // fallback
+        const wrong = chooseWrongTerms();
+        return {
+          id: `rpg-${idx}-fallback-${correct.id}`,
+          title: "Archivo del Cronista",
+          description: `“${shortDef(correct.definition)}”\n\n¿Qué término corresponde?`,
+          choices: shuffleArray([
+            { text: correct.term, correct: true, feedback: "Correcto." },
+            { text: wrong[0].term, correct: false, feedback: "Incorrecto." },
+            { text: wrong[1].term, correct: false, feedback: "Incorrecto." },
+          ])
+        };
+      };
+
+      const startRpg = () => {
+        setRpgMode(true);
+        setQuizMode(false);
+        setActiveCategory(null);
+
+        setRpgStats({ ink: 100, prestige: 0 });
         setRpgFeedback(null);
-      } else {
-        setRpgFinished(true);
-        unlockRandomCard("¡Misión Cumplida!");
-      }
-    };
+        setRpgFinished(false);
 
-    const copyToClipboard = (text) => navigator.clipboard.writeText(text);
+        // Dificultad: 1 normal, 2 medio, 3 alto (puedes ajustar)
+        const difficulty = 2;
 
-    const getRandomTerm = () => {
-      setSelectedTerm(compendioData[Math.floor(Math.random() * compendioData.length)]);
-      setQuizMode(false);
-      setRpgMode(false);
-      setActiveCategory("Identidad");
-    };
+        const used = new Set();
+        const deck = [];
+        for (let i = 0; i < RPG_ROUNDS; i++) {
+          const sc = buildRpgScenario(i + 1, difficulty, used);
+          // Marcamos el id del término “principal” si se pudo extraer
+          // (para evitar repetir, intentamos registrar el id de compendio si existe en sc.id)
+          // Nota: como hay intruso, igual tendremos mucha variedad.
+          const m = (sc.id || "").match(/-(\d+)\s*$/);
+          if (m) used.add(parseInt(m[1], 10));
+          deck.push(sc);
+        }
 
-    const filteredTerms = useMemo(() => {
-      if (!activeCategory || activeCategory === "Galería") return [];
-      return compendioData.filter(item => {
-        const matchesCategory = activeCategory === "Favoritos"
-          ? favorites.includes(item.id)
-          : item.category === activeCategory;
+        setRpgDeck(deck);
+        setRpgIndex(0);
+      };
 
-        const matchesSearch =
-          item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.definition.toLowerCase().includes(searchTerm.toLowerCase());
+      const handleRpgChoice = (choice) => {
+        if (choice.correct) {
+          setRpgStats(prev => ({ ...prev, prestige: prev.prestige + 15 }));
+          setRpgFeedback({ type: 'success', text: choice.feedback });
+        } else {
+          setRpgStats(prev => ({ ...prev, ink: prev.ink - 20 }));
+          setRpgFeedback({ type: 'error', text: choice.feedback });
+        }
+      };
 
-        return matchesCategory && matchesSearch;
-      });
-    }, [activeCategory, searchTerm, favorites]);
+      const nextRpgStep = () => {
+        // derrota por tinta
+        if (rpgStats.ink <= 0) {
+          setRpgFinished(true);
+          return;
+        }
 
-    const renderRpgContent = () => {
-      if (rpgFinished) {
-        const isWin = rpgStats.ink > 0;
-        return (
-          <div className="text-center animate-fade-in py-10">
-            <div className="mb-6 inline-flex p-6 rounded-full bg-white shadow-soft">
-              <Icon path={isWin ? Icons.Feather : Icons.X} size={48} className={isWin ? "text-peru-gold" : "text-peru-red"} />
+        const nextIndex = rpgIndex + 1;
+        if (nextIndex >= rpgDeck.length) {
+          setRpgFinished(true);
+          unlockRandomCard("¡Misión Cumplida!");
+          return;
+        }
+
+        setRpgIndex(nextIndex);
+        setRpgFeedback(null);
+      };
+
+      const copyToClipboard = (text) => { navigator.clipboard.writeText(text); };
+
+      const getRandomTerm = () => {
+        setSelectedTerm(compendioData[Math.floor(Math.random() * compendioData.length)]);
+        setQuizMode(false);
+        setRpgMode(false);
+        setActiveCategory("Identidad");
+      };
+
+      // Filter logic
+      const filteredTerms = useMemo(() => {
+        if (!activeCategory || activeCategory === "Galería") return [];
+        return compendioData.filter(item => {
+          const matchesCategory = activeCategory === "Favoritos"
+            ? favorites.includes(item.id)
+            : item.category === activeCategory;
+
+          const matchesSearch =
+            item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.definition.toLowerCase().includes(searchTerm.toLowerCase());
+
+          return matchesCategory && matchesSearch;
+        });
+      }, [activeCategory, searchTerm, favorites]);
+
+      // --- RPG RENDERER ---
+      const renderRpgContent = () => {
+        if (rpgFinished) {
+          const isWin = rpgStats.ink > 0 && rpgIndex >= rpgDeck.length - 1;
+          const title = (rpgStats.ink <= 0) ? "Tinta Agotada" : "¡Crónica Completada!";
+          const subtitle = (rpgStats.ink <= 0)
+            ? "Tus errores han manchado la historia. Inténtalo de nuevo."
+            : `Has preservado la memoria del reino. Prestigio Final: ${rpgStats.prestige}`;
+
+          return (
+            <div className="text-center animate-fade-in py-10">
+              <div className="mb-6 inline-flex p-6 rounded-full bg-white shadow-soft">
+                <Icon path={(rpgStats.ink <= 0) ? Icons.X : Icons.Feather} size={48} className={(rpgStats.ink <= 0) ? "text-peru-red" : "text-peru-gold"} />
+              </div>
+              <h2 className="text-3xl font-serif font-bold mb-3 text-colonial-dark">{title}</h2>
+              <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">{subtitle}</p>
+              <div className="flex flex-wrap gap-3 justify-center">
+                <button onClick={startRpg} className="bg-colonial-dark text-peru-gold px-8 py-3 rounded-full font-bold uppercase hover:bg-black transition-all shadow-lg">
+                  Volver a empezar
+                </button>
+                <button onClick={() => { setRpgMode(false); setActiveCategory("Identidad"); }} className="bg-white border border-stone-200 text-colonial-dark px-8 py-3 rounded-full font-bold uppercase hover:bg-stone-50 transition-all shadow-sm">
+                  Volver al Compendio
+                </button>
+              </div>
             </div>
-            <h2 className="text-3xl font-serif font-bold mb-3 text-colonial-dark">{isWin ? "¡Crónica Completada!" : "Tinta Agotada"}</h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-              {isWin ? `Has preservado la memoria del reino. Prestigio Final: ${rpgStats.prestige}` : "Tus errores han manchado la historia. Inténtalo de nuevo."}
-            </p>
-            <button onClick={startRpg} className="bg-colonial-dark text-peru-gold px-8 py-3 rounded-full font-bold uppercase hover:bg-black transition-all shadow-lg">
-              Volver a empezar
-            </button>
+          );
+        }
+
+        // Pantalla inicial del RPG
+        if (!rpgDeck.length) {
+          return (
+            <div className="text-center animate-fade-in max-w-lg mx-auto py-8">
+              <div className="mb-6 inline-block p-4 rounded-full bg-peru-gold/10 border border-peru-gold/30">
+                <Icon path={Icons.Feather} size={40} className="text-peru-gold" />
+              </div>
+              <h2 className="text-4xl font-serif font-bold mb-4 text-colonial-dark">La Misión del Cronista</h2>
+              <p className="mb-8 text-gray-600 leading-relaxed font-serif">
+                "Viaja por archivos y símbolos. Tu misión es registrar la verdad histórica."
+                <br />Cada error consume Tinta. Cada acierto aumenta tu Prestigio.
+              </p>
+              <button onClick={startRpg} className="bg-red-gradient text-white px-10 py-4 rounded-full font-serif font-bold text-lg hover:shadow-gold-glow transition-all transform hover:scale-105">
+                Iniciar Viaje
+              </button>
+            </div>
+          );
+        }
+
+        const scenario = rpgDeck[rpgIndex];
+        if (!scenario) {
+          setRpgFinished(true);
+          return null;
+        }
+
+        return (
+          <div className="animate-fade-in max-w-3xl mx-auto">
+            <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-card border border-stone-100">
+              <div className="flex items-center gap-3 font-bold text-colonial-dark">
+                <span className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-xs text-gray-500 font-serif">
+                  {rpgIndex + 1}
+                </span>
+                <span className="font-serif tracking-wide">{scenario.title}</span>
+              </div>
+              <div className="flex gap-6 text-sm font-bold">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${rpgStats.ink < 30 ? 'bg-red-500 animate-pulse' : 'bg-colonial-dark'}`}></div>
+                  <span className={`${rpgStats.ink < 30 ? 'text-red-600' : 'text-gray-600'}`}>Tinta: {rpgStats.ink}%</span>
+                </div>
+                <span className="text-peru-gold">Prestigio: {rpgStats.prestige}</span>
+              </div>
+            </div>
+
+            <div className="mb-10 text-center whitespace-pre-line">
+              <h3 className="text-2xl font-serif text-colonial-dark leading-relaxed">{scenario.description}</h3>
+            </div>
+
+            {!rpgFeedback ? (
+              <div className="grid md:grid-cols-3 gap-4">
+                {scenario.choices.map((choice, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleRpgChoice(choice)}
+                    className="group p-6 text-left bg-white border border-stone-200 rounded-xl hover:border-peru-gold/50 hover:shadow-lg transition-all duration-300 relative overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-peru-gold/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <span className="relative z-10 font-bold text-gray-700 group-hover:text-colonial-dark">{choice.text}</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className={`p-8 rounded-2xl text-center shadow-lg transform scale-105 transition-transform ${rpgFeedback.type === 'success' ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}>
+                <h3 className={`text-xl font-bold mb-3 ${rpgFeedback.type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
+                  {rpgFeedback.type === 'success' ? '¡Excelente!' : 'Error de Registro'}
+                </h3>
+                <p className="mb-6 text-gray-700">{rpgFeedback.text}</p>
+                <button onClick={nextRpgStep} className="bg-colonial-dark text-white px-8 py-3 rounded-full font-bold hover:bg-black transition-colors shadow-lg">
+                  Continuar
+                </button>
+              </div>
+            )}
           </div>
         );
-      }
-
-      if (rpgStep === 0) {
-        return (
-          <div className="text-center animate-fade-in max-w-lg mx-auto py-8">
-            <div className="mb-6 inline-block p-4 rounded-full bg-peru-gold/10 border border-peru-gold/30">
-              <Icon path={Icons.Feather} size={40} className="text-peru-gold" />
-            </div>
-            <h2 className="text-4xl font-serif font-bold mb-4 text-colonial-dark">La Misión del Cronista</h2>
-            <p className="mb-8 text-gray-600 leading-relaxed font-serif">"Viaja a través del tiempo y los Andes. Tu misión es registrar la verdad histórica. Cuidado: cada error te costará Tinta."</p>
-            <button onClick={() => setRpgStep(1)} className="bg-red-gradient text-white px-10 py-4 rounded-full font-serif font-bold text-lg hover:shadow-gold-glow transition-all transform hover:scale-105">
-              Iniciar Viaje
-            </button>
-          </div>
-        );
-      }
-
-      const scenario = rpgScenarios[rpgStep - 1];
-
-      // ✅ FIX: NO hacer setState aquí. Solo marcamos “pendiente” y React avanza en useEffect
-      if (!scenario) {
-        if (!pendingAdvance) setPendingAdvance(true);
-        return null;
-      }
+      };
 
       return (
-        <div className="animate-fade-in max-w-3xl mx-auto">
-          <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-card border border-stone-100">
-            <div className="flex items-center gap-3 font-bold text-colonial-dark">
-              <span className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-xs text-gray-500 font-serif">{rpgStep}</span>
-              <span className="font-serif tracking-wide">{scenario.title}</span>
-            </div>
-            <div className="flex gap-6 text-sm font-bold">
-              <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${rpgStats.ink < 30 ? 'bg-red-500 animate-pulse' : 'bg-colonial-dark'}`}></div>
-                <span className={`${rpgStats.ink < 30 ? 'text-red-600' : 'text-gray-600'}`}>Tinta: {rpgStats.ink}%</span>
+        <div className="flex flex-col min-h-screen font-sans">
+          {/* HERO HEADER */}
+          <header className="relative bg-colonial-dark text-white overflow-hidden pb-16 pt-20 px-6">
+            <div className="absolute inset-0 z-0 bg-colonial-pattern opacity-10"></div>
+            <div className="absolute inset-0 z-0 bg-gradient-to-br from-peru-red-dark via-colonial-dark to-black opacity-95"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-stone-50 to-transparent z-10"></div>
+
+            <div className="container mx-auto text-center relative z-20">
+              <div className="inline-flex justify-center items-center mb-6 p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm shadow-gold-glow animate-fade-in">
+                <Icon path={Icons.Book} size={32} className="text-peru-gold mr-3" />
+                <span className="text-peru-gold font-bold tracking-[0.2em] text-sm uppercase font-serif">Edición Digital 2.0</span>
               </div>
-              <span className="text-peru-gold">Prestigio: {rpgStats.prestige}</span>
-            </div>
-          </div>
+              <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-transparent bg-clip-text bg-gold-gradient mb-6 drop-shadow-sm animate-slide-up">
+                Compendio de la Peruanidad
+              </h1>
+              <p className="text-lg md:text-xl text-stone-200 font-light italic mb-10 max-w-2xl mx-auto animate-fade-in font-serif">
+                "La Síntesis Viviente de nuestra Identidad"
+              </p>
 
-          <div className="mb-10 text-center">
-            <p className="text-2xl font-serif text-colonial-dark leading-relaxed">{scenario.description}</p>
-          </div>
-
-          {!rpgFeedback ? (
-            <div className="grid md:grid-cols-2 gap-4">
-              {scenario.choices.map((choice, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleRpgChoice(choice)}
-                  className="group p-6 text-left bg-white border border-stone-200 rounded-xl hover:border-peru-gold/50 hover:shadow-lg transition-all duration-300 relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-peru-gold/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <span className="relative z-10 font-bold text-gray-700 group-hover:text-colonial-dark">{choice.text}</span>
+              <div className="flex flex-wrap justify-center gap-4 animate-fade-in">
+                <button onClick={getRandomTerm} className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full text-sm font-bold border border-white/20 text-white flex items-center gap-2 transition-all backdrop-blur-sm">
+                  <Icon path={Icons.Shuffle} size={16} /> Sorpréndeme
                 </button>
-              ))}
+                <button onClick={startQuiz} className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-full text-sm font-bold hover:bg-white hover:text-peru-red transition-all flex items-center gap-2 backdrop-blur-sm">
+                  <Icon path={Icons.Brain} size={16} /> Quiz
+                </button>
+                <button onClick={() => { setRpgMode(true); setQuizMode(false); setActiveCategory(null); setRpgDeck([]); setRpgIndex(0); setRpgFinished(false); setRpgFeedback(null); setRpgStats({ ink: 100, prestige: 0 }); }} className="bg-gold-gradient text-white px-8 py-3 rounded-full text-sm font-bold hover:shadow-gold-glow transition-all flex items-center gap-2 shadow-lg transform hover:-translate-y-0.5">
+                  <Icon path={Icons.Feather} size={16} /> Misión del Cronista
+                </button>
+              </div>
             </div>
-          ) : (
-            <div className={`p-8 rounded-2xl text-center shadow-lg transform scale-105 transition-transform ${rpgFeedback.type === 'success' ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}>
-              <h3 className={`text-xl font-bold mb-3 ${rpgFeedback.type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
-                {rpgFeedback.type === 'success' ? '¡Excelente!' : 'Error Histórico'}
-              </h3>
-              <p className="mb-6 text-gray-700">{rpgFeedback.text}</p>
-              <button onClick={nextRpgStep} className="bg-colonial-dark text-white px-8 py-3 rounded-full font-bold hover:bg-black transition-colors shadow-lg">
-                Continuar
-              </button>
+          </header>
+
+          {/* STICKY NAV */}
+          <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur-md shadow-card border-b border-stone-200">
+            <div className="container mx-auto px-2 md:px-4">
+              <div className="flex flex-wrap justify-center gap-2 py-3 md:py-4">
+                {Object.keys(IconKeyMap).map((cat) => {
+                  const iconKey = IconKeyMap[cat];
+                  const isActive = activeCategory === cat && !rpgMode && !quizMode;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => { setActiveCategory(cat); setQuizMode(false); setRpgMode(false); }}
+                      className={`group relative flex items-center gap-1 md:gap-2 px-3 md:px-5 py-2 rounded-full transition-all duration-300 border
+                        ${isActive
+                          ? 'bg-stone-100 text-colonial-dark border-stone-300 shadow-sm'
+                          : 'border-transparent text-gray-500 hover:bg-stone-50 hover:text-gray-800'}`}
+                    >
+                      <Icon path={Icons[iconKey]} size={16} className={`md:w-5 md:h-5 ${isActive ? "text-peru-red" : "text-gray-400 group-hover:text-gray-600"}`} />
+                      <span className="text-xs md:text-sm font-bold whitespace-nowrap font-serif tracking-wide">{cat}</span>
+                    </button>
+                  );
+                })}
+                <button
+                  onClick={() => { setActiveCategory("Favoritos"); setQuizMode(false); setRpgMode(false); }}
+                  className={`group relative flex items-center gap-1 md:gap-2 px-3 md:px-5 py-2 rounded-full transition-all duration-300 border
+                    ${activeCategory === "Favoritos" && !rpgMode && !quizMode
+                      ? 'bg-stone-100 text-colonial-dark border-stone-300 shadow-sm'
+                      : 'border-transparent text-gray-500 hover:bg-stone-50 hover:text-gray-800'}`}
+                >
+                  <Icon path={Icons.Heart} size={16} className={`md:w-5 md:h-5 ${activeCategory === "Favoritos" ? "fill-peru-red text-peru-red" : "text-gray-400 group-hover:text-gray-600"}`} />
+                  <span className="text-xs md:text-sm font-bold font-serif tracking-wide">Favoritos</span>
+                </button>
+                <button
+                  onClick={() => { setActiveCategory("Galería"); setQuizMode(false); setRpgMode(false); }}
+                  className={`group relative flex items-center gap-1 md:gap-2 px-3 md:px-5 py-2 rounded-full transition-all duration-300 border
+                    ${activeCategory === "Galería" && !rpgMode && !quizMode
+                      ? 'bg-stone-100 text-colonial-dark border-stone-300 shadow-sm'
+                      : 'border-transparent text-gray-500 hover:bg-stone-50 hover:text-gray-800'}`}
+                >
+                  <Icon path={Icons.Image} size={16} className={`md:w-5 md:h-5 ${activeCategory === "Galería" ? "text-peru-gold" : "text-gray-400 group-hover:text-gray-600"}`} />
+                  <span className="text-xs md:text-sm font-bold font-serif tracking-wide">Galería</span>
+                </button>
+              </div>
+            </div>
+          </nav>
+
+          {/* MAIN CONTENT */}
+          <main className="flex-grow container mx-auto px-6 py-12 relative z-0">
+            {rpgMode ? (
+              <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 relative overflow-hidden min-h-[500px] flex flex-col justify-center border border-stone-100 animate-slide-up">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-peru-gold/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-peru-red/5 rounded-full blur-3xl -ml-32 -mb-32 pointer-events-none"></div>
+                <button onClick={() => setRpgMode(false)} className="absolute top-6 right-6 p-2 rounded-full hover:bg-stone-100 transition-colors z-10">
+                  <Icon path={Icons.X} size={24} className="text-gray-400 hover:text-red-500" />
+                </button>
+                <div className="relative z-10">
+                  {renderRpgContent()}
+                </div>
+              </div>
+            ) : quizMode ? (
+              <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-12 relative border-t-8 border-peru-red animate-slide-up">
+                <button onClick={() => setQuizMode(false)} className="absolute top-4 right-4 p-2 hover:bg-stone-50 rounded-full transition-colors">
+                  <Icon path={Icons.X} size={24} className="text-gray-400" />
+                </button>
+
+                <div className="text-center mb-10">
+                  <span className="inline-block px-4 py-1.5 bg-stone-100 text-colonial-dark text-xs font-bold rounded-full mb-4 uppercase tracking-widest font-serif border border-stone-200">
+                    Modo Quiz
+                  </span>
+                  <h2 className="text-3xl font-serif font-bold text-colonial-dark">{quizQuestion?.promptTitle || "Modo Quiz"}</h2>
+                  <div className="mt-4 flex justify-center items-center gap-2 text-sm font-bold text-gray-500">
+                    Racha Actual: <span className="text-peru-gold text-lg">{quizStreak}</span> / 10 para premio
+                  </div>
+                </div>
+
+                {quizQuestion && (
+                  <>
+                    <div className="bg-parchment p-8 rounded-xl mb-8 border border-stone-200 text-center shadow-inner relative">
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-white px-3 text-4xl text-peru-gold font-serif leading-none">"</div>
+                      <p className="text-xl italic text-gray-800 font-serif leading-relaxed mt-2">{quizQuestion.promptBody}</p>
+                    </div>
+
+                    <div className="grid gap-4">
+                      {quizQuestion.options.map(opt => (
+                        <button
+                          key={opt.id}
+                          onClick={() => handleAnswer(opt)}
+                          disabled={quizFeedback !== null}
+                          className={`p-5 rounded-xl border-2 text-left font-bold transition-all flex justify-between items-center group
+                            ${quizFeedback === null
+                              ? 'border-transparent bg-white shadow-card hover:shadow-lg hover:border-peru-gold/30'
+                              : (quizQuestion.type === "TERM_TO_CATEGORY"
+                                  ? (opt.label === quizQuestion.answerKey ? 'border-green-500 bg-green-50 text-green-800' : 'border-transparent bg-stone-100 text-gray-400 opacity-50')
+                                  : (opt.id === quizQuestion.answerKey ? 'border-green-500 bg-green-50 text-green-800' : 'border-transparent bg-stone-100 text-gray-400 opacity-50')
+                                )
+                            }`}
+                        >
+                          <span className="font-serif">
+                            {quizQuestion.type === "TERM_TO_CATEGORY" ? opt.label : opt.term}
+                          </span>
+                          {quizFeedback === null && <div className="w-6 h-6 rounded-full border-2 border-stone-200 group-hover:border-peru-gold"></div>}
+                        </button>
+                      ))}
+                    </div>
+
+                    {quizFeedback && (
+                      <div className="mt-8 text-center animate-fade-in">
+                        {quizFeedback === "correct"
+                          ? <div className="text-green-700 font-bold mb-4 text-xl flex items-center justify-center gap-2"><div className="w-2 h-2 bg-green-500 rounded-full"></div> ¡Correcto!</div>
+                          : <div className="text-peru-red font-bold mb-4 text-xl">
+                              Incorrecto. Era{" "}
+                              {quizQuestion.type === "TERM_TO_CATEGORY"
+                                ? `"${quizQuestion.correct.category}"`
+                                : `"${quizQuestion.correct.term}"`}
+                              .
+                            </div>
+                        }
+                        <button onClick={generateQuestion} className="bg-colonial-dark text-white px-10 py-3 rounded-full font-bold hover:bg-peru-gold hover:text-black transition-all shadow-lg font-serif">
+                          Siguiente Pregunta
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            ) : activeCategory === "Galería" ? (
+              <div className="animate-fade-in">
+                <div className="text-center mb-12">
+                  <div className="inline-block p-4 rounded-full bg-peru-gold/10 border border-peru-gold/30 mb-4">
+                    <Icon path={Icons.Image} size={40} className="text-peru-gold" />
+                  </div>
+                  <h2 className="text-4xl font-serif font-bold text-colonial-dark mb-2">Mi Galería Histórica</h2>
+                  <p className="text-gray-500">Colecciona las 20 cartas especiales completando misiones y quizzes.</p>
+                  <p className="text-sm font-bold mt-4 text-peru-gold">{unlockedCards.length} / 20 Desbloqueadas</p>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  {galleryData.map(card => {
+                    const isUnlocked = unlockedCards.includes(card.id);
+                    return (
+                      <div key={card.id} className={`aspect-[3/4] rounded-xl relative overflow-hidden transition-all duration-500 ${isUnlocked ? 'shadow-card hover:shadow-gold-glow transform hover:-translate-y-2 cursor-pointer bg-white' : 'bg-stone-200 border-2 border-stone-300 border-dashed'}`}>
+                        {isUnlocked ? (
+                          <div className="h-full flex flex-col card-shiny group">
+                            <div className="h-2/3 overflow-hidden relative">
+                              <img src={card.image} alt={card.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                              <div className={`absolute inset-0 bg-gradient-to-t from-black/60 to-transparent`}></div>
+                            </div>
+
+                            <div className="p-3 flex flex-col justify-center flex-grow text-center bg-white relative z-10">
+                              <h3 className="font-serif font-bold text-sm text-colonial-dark leading-tight mb-1">{card.name}</h3>
+                              <p className="text-[10px] uppercase tracking-wider text-peru-gold font-bold">{card.title}</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                            <Icon path={Icons.Lock} size={32} className="mb-2" />
+                            <span className="text-xs font-bold uppercase tracking-widest">Bloqueado</span>
+                            <span className="text-[10px] mt-1 font-mono opacity-50">#{card.id}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="relative max-w-xl mx-auto mb-16 group">
+                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                    <Icon path={Icons.Search} className="text-gray-400 group-focus-within:text-peru-red transition-colors" size={20} />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Buscar un término..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-12 pr-6 py-4 rounded-full bg-white border-0 shadow-soft focus:ring-2 focus:ring-peru-gold/30 focus:shadow-lg transition-all font-sans text-lg placeholder-gray-400"
+                  />
+                </div>
+
+                <div className="text-center mb-16 animate-fade-in">
+                  <h2 className="text-4xl font-serif font-bold mb-4 text-colonial-dark">
+                    {activeCategory === "Identidad" && "I. Identidad e Historia"}
+                    {activeCategory === "Cultura" && "II. Cultura y Tradiciones"}
+                    {activeCategory === "Social" && "III. Sociedad y Valores"}
+                    {activeCategory === "Espiritualidad" && "IV. Símbolos de Unión"}
+                    {activeCategory === "Favoritos" && "Mis Colecciones"}
+                  </h2>
+                  <div className="h-1 w-24 bg-peru-gold mx-auto mb-4 rounded-full"></div>
+                  <p className="text-gray-500 max-w-xl mx-auto text-base font-light italic font-serif">
+                    {activeCategory === "Identidad" && "Fundamentos históricos y mestizaje."}
+                    {activeCategory === "Cultura" && "Arte, fiestas y expresiones de la síntesis."}
+                    {activeCategory === "Social" && "Instituciones y organización civil."}
+                    {activeCategory === "Espiritualidad" && "Devociones y el alma nacional."}
+                  </p>
+                </div>
+
+                {filteredTerms.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {filteredTerms.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => setSelectedTerm(item)}
+                        className="group bg-white rounded-2xl p-8 cursor-pointer shadow-card transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden border border-stone-100 flex flex-col h-full"
+                      >
+                        <div className={`absolute top-0 left-0 right-0 h-1.5 ${ColorMap[item.category]}`}></div>
+
+                        <div className="flex justify-between items-start mb-6">
+                          <span className={`text-[10px] font-bold tracking-widest uppercase py-1 px-3 rounded-full bg-stone-50 border border-stone-100 ${TextColorMap[item.category]}`}>
+                            {item.category}
+                          </span>
+                          <button
+                            onClick={(e) => toggleFavorite(e, item.id)}
+                            className="text-stone-300 hover:text-peru-red transition-colors focus:outline-none p-1"
+                          >
+                            <Icon path={Icons.Heart} size={20} className={favorites.includes(item.id) ? "fill-peru-red text-peru-red" : ""} />
+                          </button>
+                        </div>
+
+                        <h3 className="text-2xl font-serif font-bold text-colonial-dark mb-4 group-hover:text-peru-red transition-colors leading-tight">
+                          {item.term}
+                        </h3>
+                        <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3 flex-grow font-sans">
+                          {item.definition}
+                        </p>
+
+                        <div className="flex items-center justify-end text-xs font-bold text-peru-gold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                          LEER MÁS <Icon path={Icons.ChevronRight} size={14} className="ml-1" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-24 opacity-40">
+                    <div className="bg-stone-200 inline-flex p-6 rounded-full mb-4">
+                      <Icon path={Icons.Search} size={32} className="text-gray-500" />
+                    </div>
+                    <p className="text-lg font-serif text-gray-500">
+                      {activeCategory === "Favoritos" ? "Aún no has guardado ningún término." : "No encontramos lo que buscas."}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </main>
+
+          {/* NEW CARD UNLOCKED MODAL */}
+          {showUnlockModal && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in" onClick={() => setShowUnlockModal(null)}>
+              <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center relative overflow-hidden animate-pop-in border-4 border-peru-gold" onClick={e => e.stopPropagation()}>
+                <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-peru-gold to-yellow-600 opacity-20"></div>
+                <div className="relative z-10">
+                  <div className="inline-block p-4 bg-peru-gold text-white rounded-full mb-4 shadow-lg animate-bounce">
+                    <Icon path={Icons.Unlock} size={32} />
+                  </div>
+                  <h2 className="text-2xl font-serif font-bold text-colonial-dark mb-1">¡Carta Desbloqueada!</h2>
+                  <p className="text-xs font-bold text-peru-red uppercase tracking-widest mb-6">{showUnlockModal.source}</p>
+
+                  <div className="bg-stone-50 rounded-xl p-4 border border-stone-200 shadow-inner mb-6 transform hover:scale-105 transition-transform duration-300">
+                    <div className="w-full h-48 overflow-hidden rounded-lg mb-3 shadow-md">
+                      <img src={showUnlockModal.image} alt={showUnlockModal.name} className="w-full h-full object-cover" />
+                    </div>
+                    <h3 className="font-serif font-bold text-lg text-colonial-dark">{showUnlockModal.name}</h3>
+                    <p className="text-xs text-gray-500">{showUnlockModal.title}</p>
+                  </div>
+
+                  <button onClick={() => setShowUnlockModal(null)} className="w-full bg-colonial-dark text-white py-3 rounded-xl font-bold hover:bg-black transition-colors">
+                    ¡Genial!
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MODAL DEFINITION */}
+          {selectedTerm && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setSelectedTerm(null)}>
+              <div className="absolute inset-0 bg-colonial-dark/80 backdrop-blur-sm animate-fade-in"></div>
+
+              <div
+                className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden relative animate-slide-up z-10"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className={`h-32 ${ColorMap[selectedTerm.category]} relative overflow-hidden flex items-end p-8`}>
+                  <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+                  <button
+                    onClick={() => setSelectedTerm(null)}
+                    className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all backdrop-blur-md border border-white/10"
+                  >
+                    <Icon path={Icons.X} size={20} />
+                  </button>
+
+                  <div className="relative z-10 w-full">
+                    <div className="flex items-center gap-2 mb-2 opacity-90">
+                      <span className="text-[10px] font-bold tracking-widest uppercase text-white bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
+                        {selectedTerm.category}
+                      </span>
+                      <span className="text-white/60 text-xs font-mono">#{selectedTerm.id}</span>
+                    </div>
+                    <h2 className="text-3xl font-serif font-bold text-white leading-tight">{selectedTerm.term}</h2>
+                  </div>
+                </div>
+
+                <div className="p-8">
+                  <div className="prose prose-stone mb-10">
+                    <p className="text-lg leading-relaxed text-gray-700 font-serif first-letter:text-5xl first-letter:font-bold first-letter:text-peru-gold first-letter:float-left first-letter:mr-2 first-letter:mt-[-10px]">
+                      {selectedTerm.definition}
+                    </p>
+                  </div>
+
+                  <div className="border-t border-stone-100 pt-6 flex justify-between items-center">
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => toggleFavorite({ stopPropagation: () => {} }, selectedTerm.id)}
+                        className={`flex items-center gap-2 text-sm font-bold transition-colors ${favorites.includes(selectedTerm.id) ? 'text-peru-red' : 'text-gray-400 hover:text-gray-600'}`}
+                      >
+                        <Icon path={Icons.Heart} size={18} className={favorites.includes(selectedTerm.id) ? "fill-peru-red" : ""} />
+                        <span>{favorites.includes(selectedTerm.id) ? 'Guardado' : 'Guardar'}</span>
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(`${selectedTerm.term}: ${selectedTerm.definition}`)}
+                        className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-colonial-dark transition-colors"
+                      >
+                        <Icon path={Icons.Copy} size={18} /> <span>Copiar</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
           )}
         </div>
       );
-    };
+    }
 
-    return (
-      <div className="flex flex-col min-h-screen font-sans">
-        {/* HERO HEADER */}
-        <header className="relative bg-colonial-dark text-white overflow-hidden pb-16 pt-20 px-6">
-          <div className="absolute inset-0 z-0 bg-colonial-pattern opacity-10"></div>
-          <div className="absolute inset-0 z-0 bg-gradient-to-br from-peru-red-dark via-colonial-dark to-black opacity-95"></div>
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-stone-50 to-transparent z-10"></div>
-
-          <div className="container mx-auto text-center relative z-20">
-            <div className="inline-flex justify-center items-center mb-6 p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm shadow-gold-glow animate-fade-in">
-              <Icon path={Icons.Book} size={32} className="text-peru-gold mr-3" />
-              <span className="text-peru-gold font-bold tracking-[0.2em] text-sm uppercase font-serif">Edición Digital 2.0</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-transparent bg-clip-text bg-gold-gradient mb-6 drop-shadow-sm animate-slide-up">
-              Compendio de la Peruanidad
-            </h1>
-            <p className="text-lg md:text-xl text-stone-200 font-light italic mb-10 max-w-2xl mx-auto animate-fade-in font-serif">
-              "La Síntesis Viviente de nuestra Identidad"
-            </p>
-
-            <div className="flex flex-wrap justify-center gap-4 animate-fade-in">
-              <button onClick={getRandomTerm} className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full text-sm font-bold border border-white/20 text-white flex items-center gap-2 transition-all backdrop-blur-sm">
-                <Icon path={Icons.Shuffle} size={16} /> Sorpréndeme
-              </button>
-              <button onClick={startQuiz} className="bg-white/10 text-white border border-white/20 px-6 py-3 rounded-full text-sm font-bold hover:bg-white hover:text-peru-red transition-all flex items-center gap-2 backdrop-blur-sm">
-                <Icon path={Icons.Brain} size={16} /> Quiz
-              </button>
-              <button onClick={startRpg} className="bg-gold-gradient text-white px-8 py-3 rounded-full text-sm font-bold hover:shadow-gold-glow transition-all flex items-center gap-2 shadow-lg transform hover:-translate-y-0.5">
-                <Icon path={Icons.Feather} size={16} /> Misión del Cronista
-              </button>
-            </div>
-          </div>
-        </header>
-
-        {/* STICKY NAV */}
-        <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur-md shadow-card border-b border-stone-200">
-          <div className="container mx-auto px-2 md:px-4">
-            <div className="flex flex-wrap justify-center gap-2 py-3 md:py-4">
-              {Object.keys(IconKeyMap).map((cat) => {
-                const iconKey = IconKeyMap[cat];
-                const isActive = activeCategory === cat && !rpgMode && !quizMode;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => { setActiveCategory(cat); setQuizMode(false); setRpgMode(false); }}
-                    className={`group relative flex items-center gap-1 md:gap-2 px-3 md:px-5 py-2 rounded-full transition-all duration-300 border
-                      ${isActive
-                        ? 'bg-stone-100 text-colonial-dark border-stone-300 shadow-sm'
-                        : 'border-transparent text-gray-500 hover:bg-stone-50 hover:text-gray-800'}`}
-                  >
-                    <Icon path={Icons[iconKey]} size={16} className={`md:w-5 md:h-5 ${isActive ? "text-peru-red" : "text-gray-400 group-hover:text-gray-600"}`} />
-                    <span className="text-xs md:text-sm font-bold whitespace-nowrap font-serif tracking-wide">{cat}</span>
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={() => { setActiveCategory("Favoritos"); setQuizMode(false); setRpgMode(false); }}
-                className={`group relative flex items-center gap-1 md:gap-2 px-3 md:px-5 py-2 rounded-full transition-all duration-300 border
-                  ${activeCategory === "Favoritos" && !rpgMode && !quizMode
-                    ? 'bg-stone-100 text-colonial-dark border-stone-300 shadow-sm'
-                    : 'border-transparent text-gray-500 hover:bg-stone-50 hover:text-gray-800'}`}
-              >
-                <Icon path={Icons.Heart} size={16} className={`md:w-5 md:h-5 ${activeCategory === "Favoritos" ? "fill-peru-red text-peru-red" : "text-gray-400 group-hover:text-gray-600"}`} />
-                <span className="text-xs md:text-sm font-bold font-serif tracking-wide">Favoritos</span>
-              </button>
-
-              <button
-                onClick={() => { setActiveCategory("Galería"); setQuizMode(false); setRpgMode(false); }}
-                className={`group relative flex items-center gap-1 md:gap-2 px-3 md:px-5 py-2 rounded-full transition-all duration-300 border
-                  ${activeCategory === "Galería" && !rpgMode && !quizMode
-                    ? 'bg-stone-100 text-colonial-dark border-stone-300 shadow-sm'
-                    : 'border-transparent text-gray-500 hover:bg-stone-50 hover:text-gray-800'}`}
-              >
-                <Icon path={Icons.Image} size={16} className={`md:w-5 md:h-5 ${activeCategory === "Galería" ? "text-peru-gold" : "text-gray-400 group-hover:text-gray-600"}`} />
-                <span className="text-xs md:text-sm font-bold font-serif tracking-wide">Galería</span>
-              </button>
-            </div>
-          </div>
-        </nav>
-
-        {/* MAIN CONTENT */}
-        <main className="flex-grow container mx-auto px-6 py-12 relative z-0">
-
-          {rpgMode ? (
-            <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 relative overflow-hidden min-h-[500px] flex flex-col justify-center border border-stone-100 animate-slide-up">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-peru-gold/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
-              <div className="absolute bottom-0 left-0 w-96 h-96 bg-peru-red/5 rounded-full blur-3xl -ml-32 -mb-32 pointer-events-none"></div>
-              <button onClick={() => setRpgMode(false)} className="absolute top-6 right-6 p-2 rounded-full hover:bg-stone-100 transition-colors z-10">
-                <Icon path={Icons.X} size={24} className="text-gray-400 hover:text-red-500" />
-              </button>
-              <div className="relative z-10">{renderRpgContent()}</div>
-            </div>
-          ) : quizMode ? (
-            <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-12 relative border-t-8 border-peru-red animate-slide-up">
-              <button onClick={() => setQuizMode(false)} className="absolute top-4 right-4 p-2 hover:bg-stone-50 rounded-full transition-colors">
-                <Icon path={Icons.X} size={24} className="text-gray-400" />
-              </button>
-
-              <div className="text-center mb-10">
-                <span className="inline-block px-4 py-1.5 bg-stone-100 text-colonial-dark text-xs font-bold rounded-full mb-4 uppercase tracking-widest font-serif border border-stone-200">
-                  Modo Quiz
-                </span>
-                <h2 className="text-3xl font-serif font-bold text-colonial-dark">¿A qué término corresponde?</h2>
-                <div className="mt-4 flex justify-center items-center gap-2 text-sm font-bold text-gray-500">
-                  Racha Actual: <span className="text-peru-gold text-lg">{quizStreak}</span> / 10 para premio
-                </div>
-              </div>
-
-              {quizQuestion && (
-                <>
-                  <div className="bg-parchment p-8 rounded-xl mb-8 border border-stone-200 text-center shadow-inner relative">
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-white px-3 text-4xl text-peru-gold font-serif leading-none">"</div>
-                    <p className="text-xl italic text-gray-800 font-serif leading-relaxed mt-2">{quizQuestion.correct.definition}</p>
-                  </div>
-
-                  <div className="grid gap-4">
-                    {quizQuestion.options.map(opt => (
-                      <button
-                        key={opt.id}
-                        onClick={() => handleAnswer(opt)}
-                        disabled={quizFeedback !== null}
-                        className={`p-5 rounded-xl border-2 text-left font-bold transition-all flex justify-between items-center group
-                          ${quizFeedback === null
-                            ? 'border-transparent bg-white shadow-card hover:shadow-lg hover:border-peru-gold/30'
-                            : opt.id === quizQuestion.correct.id
-                              ? 'border-green-500 bg-green-50 text-green-800'
-                              : 'border-transparent bg-stone-100 text-gray-400 opacity-50'
-                          }`}
-                      >
-                        <span className="font-serif">{opt.term}</span>
-                        {quizFeedback === null && <div className="w-6 h-6 rounded-full border-2 border-stone-200 group-hover:border-peru-gold"></div>}
-                      </button>
-                    ))}
-                  </div>
-
-                  {quizFeedback && (
-                    <div className="mt-8 text-center animate-fade-in">
-                      {quizFeedback === "correct"
-                        ? <div className="text-green-700 font-bold mb-4 text-xl flex items-center justify-center gap-2"><div className="w-2 h-2 bg-green-500 rounded-full"></div> ¡Correcto!</div>
-                        : <div className="text-peru-red font-bold mb-4 text-xl">Incorrecto. Era "{quizQuestion.correct.term}".</div>
-                      }
-                      <button onClick={generateQuestion} className="bg-colonial-dark text-white px-10 py-3 rounded-full font-bold hover:bg-peru-gold hover:text-black transition-all shadow-lg font-serif">
-                        Siguiente Pregunta
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          ) : activeCategory === "Galería" ? (
-            <div className="animate-fade-in">
-              <div className="text-center mb-12">
-                <div className="inline-block p-4 rounded-full bg-peru-gold/10 border border-peru-gold/30 mb-4">
-                  <Icon path={Icons.Image} size={40} className="text-peru-gold" />
-                </div>
-                <h2 className="text-4xl font-serif font-bold text-colonial-dark mb-2">Mi Galería Histórica</h2>
-                <p className="text-gray-500">Colecciona las 20 cartas especiales completando misiones y quizzes.</p>
-                <p className="text-sm font-bold mt-4 text-peru-gold">{unlockedCards.length} / 20 Desbloqueadas</p>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                {galleryData.map(card => {
-                  const isUnlocked = unlockedCards.includes(card.id);
-                  return (
-                    <div key={card.id} className={`aspect-[3/4] rounded-xl relative overflow-hidden transition-all duration-500 ${isUnlocked ? 'shadow-card hover:shadow-gold-glow transform hover:-translate-y-2 cursor-pointer bg-white' : 'bg-stone-200 border-2 border-stone-300 border-dashed'}`}>
-                      {isUnlocked ? (
-                        <div className="h-full flex flex-col card-shiny group">
-                          <div className="h-2/3 overflow-hidden relative">
-                            <img src={card.image} alt={card.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                          </div>
-                          <div className="p-3 flex flex-col justify-center flex-grow text-center bg-white relative z-10">
-                            <h3 className="font-serif font-bold text-sm text-colonial-dark leading-tight mb-1">{card.name}</h3>
-                            <p className="text-[10px] uppercase tracking-wider text-peru-gold font-bold">{card.title}</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                          <Icon path={Icons.Lock} size={32} className="mb-2" />
-                          <span className="text-xs font-bold uppercase tracking-widest">Bloqueado</span>
-                          <span className="text-[10px] mt-1 font-mono opacity-50">#{card.id}</span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="relative max-w-xl mx-auto mb-16 group">
-                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                  <Icon path={Icons.Search} className="text-gray-400 group-focus-within:text-peru-red transition-colors" size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Buscar un término..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-6 py-4 rounded-full bg-white border-0 shadow-soft focus:ring-2 focus:ring-peru-gold/30 focus:shadow-lg transition-all font-sans text-lg placeholder-gray-400"
-                />
-              </div>
-
-              <div className="text-center mb-16 animate-fade-in">
-                <h2 className="text-4xl font-serif font-bold mb-4 text-colonial-dark">
-                  {activeCategory === "Identidad" && "I. Identidad e Historia"}
-                  {activeCategory === "Cultura" && "II. Cultura y Tradiciones"}
-                  {activeCategory === "Social" && "III. Sociedad y Valores"}
-                  {activeCategory === "Espiritualidad" && "IV. Símbolos de Unión"}
-                  {activeCategory === "Favoritos" && "Mis Colecciones"}
-                </h2>
-                <div className="h-1 w-24 bg-peru-gold mx-auto mb-4 rounded-full"></div>
-                <p className="text-gray-500 max-w-xl mx-auto text-base font-light italic font-serif">
-                  {activeCategory === "Identidad" && "Fundamentos históricos y mestizaje."}
-                  {activeCategory === "Cultura" && "Arte, fiestas y expresiones de la síntesis."}
-                  {activeCategory === "Social" && "Instituciones y organización civil."}
-                  {activeCategory === "Espiritualidad" && "Devociones y el alma nacional."}
-                </p>
-              </div>
-
-              {filteredTerms.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredTerms.map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => setSelectedTerm(item)}
-                      className="group bg-white rounded-2xl p-8 cursor-pointer shadow-card transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden border border-stone-100 flex flex-col h-full hover:shadow-2xl"
-                    >
-                      <div className={`absolute top-0 left-0 right-0 h-1.5 ${ColorMap[item.category]}`}></div>
-
-                      <div className="flex justify-between items-start mb-6">
-                        <span className={`text-[10px] font-bold tracking-widest uppercase py-1 px-3 rounded-full bg-stone-50 border border-stone-100 ${TextColorMap[item.category]}`}>
-                          {item.category}
-                        </span>
-                        <button
-                          onClick={(e) => toggleFavorite(e, item.id)}
-                          className="text-stone-300 hover:text-peru-red transition-colors focus:outline-none p-1"
-                        >
-                          <Icon path={Icons.Heart} size={20} className={favorites.includes(item.id) ? "fill-peru-red text-peru-red" : ""} />
-                        </button>
-                      </div>
-
-                      <h3 className="text-2xl font-serif font-bold text-colonial-dark mb-4 group-hover:text-peru-red transition-colors leading-tight">
-                        {item.term}
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3 flex-grow font-sans">
-                        {item.definition}
-                      </p>
-
-                      <div className="flex items-center justify-end text-xs font-bold text-peru-gold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                        LEER MÁS <Icon path={Icons.ChevronRight} size={14} className="ml-1" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-24 opacity-40">
-                  <div className="bg-stone-200 inline-flex p-6 rounded-full mb-4">
-                    <Icon path={Icons.Search} size={32} className="text-gray-500" />
-                  </div>
-                  <p className="text-lg font-serif text-gray-500">
-                    {activeCategory === "Favoritos" ? "Aún no has guardado ningún término." : "No encontramos lo que buscas."}
-                  </p>
-                </div>
-              )}
-            </>
-          )}
-        </main>
-
-        {showUnlockModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in" onClick={() => setShowUnlockModal(null)}>
-            <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center relative overflow-hidden animate-pop-in border-4 border-peru-gold" onClick={e => e.stopPropagation()}>
-              <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-peru-gold to-yellow-600 opacity-20"></div>
-
-              <div className="relative z-10">
-                <div className="inline-block p-4 bg-peru-gold text-white rounded-full mb-4 shadow-lg animate-bounce">
-                  <Icon path={Icons.Unlock} size={32} />
-                </div>
-                <h2 className="text-2xl font-serif font-bold text-colonial-dark mb-1">¡Carta Desbloqueada!</h2>
-                <p className="text-xs font-bold text-peru-red uppercase tracking-widest mb-6">{showUnlockModal.source}</p>
-
-                <div className="bg-stone-50 rounded-xl p-4 border border-stone-200 shadow-inner mb-6 transform hover:scale-105 transition-transform duration-300">
-                  <div className="w-full h-48 overflow-hidden rounded-lg mb-3 shadow-md">
-                    <img src={showUnlockModal.image} alt={showUnlockModal.name} className="w-full h-full object-cover" />
-                  </div>
-                  <h3 className="font-serif font-bold text-lg text-colonial-dark">{showUnlockModal.name}</h3>
-                  <p className="text-xs text-gray-500">{showUnlockModal.title}</p>
-                </div>
-
-                <button onClick={() => setShowUnlockModal(null)} className="w-full bg-colonial-dark text-white py-3 rounded-xl font-bold hover:bg-black transition-colors">
-                  ¡Genial!
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {selectedTerm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setSelectedTerm(null)}>
-            <div className="absolute inset-0 bg-colonial-dark/80 backdrop-blur-sm animate-fade-in"></div>
-
-            <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden relative animate-slide-up z-10" onClick={(e) => e.stopPropagation()}>
-              <div className={`h-32 ${ColorMap[selectedTerm.category]} relative overflow-hidden flex items-end p-8`}>
-                <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
-                <button onClick={() => setSelectedTerm(null)} className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all backdrop-blur-md border border-white/10">
-                  <Icon path={Icons.X} size={20} />
-                </button>
-
-                <div className="relative z-10 w-full">
-                  <div className="flex items-center gap-2 mb-2 opacity-90">
-                    <span className="text-[10px] font-bold tracking-widest uppercase text-white bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
-                      {selectedTerm.category}
-                    </span>
-                    <span className="text-white/60 text-xs font-mono">#{selectedTerm.id}</span>
-                  </div>
-                  <h2 className="text-3xl font-serif font-bold text-white leading-tight">{selectedTerm.term}</h2>
-                </div>
-              </div>
-
-              <div className="p-8">
-                <div className="prose prose-stone mb-10">
-                  <p className="text-lg leading-relaxed text-gray-700 font-serif first-letter:text-5xl first-letter:font-bold first-letter:text-peru-gold first-letter:float-left first-letter:mr-2 first-letter:mt-[-10px]">
-                    {selectedTerm.definition}
-                  </p>
-                </div>
-
-                <div className="border-t border-stone-100 pt-6 flex justify-between items-center">
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => toggleFavorite(null, selectedTerm.id)}
-                      className={`flex items-center gap-2 text-sm font-bold transition-colors ${favorites.includes(selectedTerm.id) ? 'text-peru-red' : 'text-gray-400 hover:text-gray-600'}`}
-                    >
-                      <Icon path={Icons.Heart} size={18} className={favorites.includes(selectedTerm.id) ? "fill-peru-red" : ""} />
-                      <span>{favorites.includes(selectedTerm.id) ? 'Guardado' : 'Guardar'}</span>
-                    </button>
-
-                    <button
-                      onClick={() => copyToClipboard(`${selectedTerm.term}: ${selectedTerm.definition}`)}
-                      className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-colonial-dark transition-colors"
-                    >
-                      <Icon path={Icons.Copy} size={18} /> <span>Copiar</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-      </div>
-    );
-  }
-
-  const root = ReactDOM.createRoot(document.getElementById('root'));
-  root.render(<App />);
-</script>
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
